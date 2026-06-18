@@ -1,5 +1,5 @@
 ---
-description: "Codex workflow for asking ChatGPT web/Pro through the local ask-gpt bridge and consuming answers through bridge capture or git-drop. Trigger when Xiang says /chatgpt, '问 ChatGPT', '让 ChatGPT 看看', '和 ChatGPT 磋商', or when a hard research/proof/design sub-point appears. Uses Codex-native shell, files, git, and gh CLI; no Telegram-specific reply tools, Claude run_in_background, MCP, tmux send-keys, or Agent subagents."
+description: "Codex workflow for asking ChatGPT web/Pro through the local ask-gpt bridge and consuming answers through bridge capture or git-drop. Trigger when Xiang says /chatgpt, '问 ChatGPT', '让 ChatGPT 看看', '和 ChatGPT 磋商', or when a hard research/proof/design sub-point appears. Uses Codex-native shell, files, git, and gh CLI."
 user-invocable: true
 ---
 
@@ -10,8 +10,7 @@ hard proof, modeling, audit, paper, or implementation sub-points. Codex asks,
 waits or monitors, verifies the answer, and lands only the parts that survive
 local checks.
 
-This is the Codex caller's guide. It removes Claude-Code-only mechanics and
-uses local shell, files, `git`, and `gh`.
+This is the Codex caller's guide. Use local shell, files, `git`, and `gh`.
 
 ## Proactive Engagement
 
@@ -62,8 +61,7 @@ EOQ
 Rules:
 
 - Do not use `ask-chatgpt.sh`.
-- Do not use Claude `run_in_background`, MCP, Telegram tools, tmux send-keys, or
-  Agent subagents.
+- Do not use non-Codex bridge helpers or chat-bot reply tools.
 - Do not add an outer timeout. The bridge has its own long deadline.
 - Do not resubmit a query that is still thinking.
 - Confirm the channel name from known-good history or Xiang; never invent
@@ -127,8 +125,7 @@ EOQ
 
 For a single question, foreground is simplest: let the command block until it
 prints the answer. For parallel independent questions, use separate shell
-processes and separate files; poll or wait explicitly. Do not rely on
-Claude-style background task notifications.
+processes and separate files; poll or wait explicitly.
 
 After completion:
 
@@ -229,8 +226,7 @@ has verified it.
 
 ## Monitoring
 
-Codex does not have Claude `run_in_background` notifications. Use one of these
-patterns:
+Use one of these Codex-native monitoring patterns:
 
 ### Foreground for one hard question
 
@@ -316,6 +312,6 @@ confirming the channel name; do not ask Xiang to paste from a phantom tab.
 - Do not commit ChatGPT claims without verification.
 - Do not use `ask-chatgpt.sh`.
 - Do not resubmit a query that is still thinking.
-- Do not use Claude-specific `run_in_background`, MCP, Telegram reply tools,
-  tmux send-keys, or Agent subagents.
+- Do not use non-Codex bridge helpers, chat-bot reply tools, or terminal
+  injection shortcuts.
 - Do not mass-reload tabs.

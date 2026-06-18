@@ -1,5 +1,5 @@
 ---
-description: "Codex master-worker oversight mode for tactical adjudication in Xiang's style. Trigger when Xiang asks Codex to watch multiple workers or outputs and decide/merge/redirect on his behalf: /Xiang, '帮我盯 worker', '帮我盯着', 'Xiang 模式', '用 Xiang 来判断', 'master-worker 模式', '你来当 master'. Uses Codex-native reading, logs, commits, and visible reports; no Telegram tools, tmux, MCP, or Claude subagents."
+description: "Codex master-worker oversight mode for tactical adjudication in Xiang's style. Trigger when Xiang asks Codex to watch multiple workers or outputs and decide/merge/redirect on his behalf: /Xiang, '帮我盯 worker', '帮我盯着', 'Xiang 模式', '用 Xiang 来判断', 'master-worker 模式', '你来当 master'. Uses Codex-native reading, logs, commits, and visible reports."
 user-invocable: true
 ---
 
@@ -35,8 +35,7 @@ Use:
 - scratch notes in the project directory;
 - commits and visible Codex reports for attribution.
 
-Do not use Telegram-specific tools, tmux send-keys, MCP-only workflows, or
-Claude Agent subagents.
+Do not use external chat-bot tooling or terminal injection shortcuts.
 
 ## Substrate
 

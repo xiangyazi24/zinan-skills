@@ -1,5 +1,5 @@
 ---
-description: "Codex workflow for running work on uisai1/uisai2 with persistent remote sessions. Trigger on 'open uis window', '跑训练', 'ssh uisai', '/uis', or requests to build/test/run on uisai. Uses direct ssh, remote tmux, shell, and git; strips local Zinan tmux, Telegram topic creation, and Claude-specific launcher assumptions."
+description: "Codex workflow for running work on uisai1/uisai2 with persistent remote sessions. Trigger on 'open uis window', '跑训练', 'ssh uisai', '/uis', or requests to build/test/run on uisai. Uses direct ssh, remote tmux, shell, and git."
 user-invocable: true
 ---
 
@@ -36,9 +36,8 @@ For one-shot remote builds:
 ssh uisai2 'cd /path/to/repo && <command>'
 ```
 
-Do not create local Zinan tmux windows, Telegram forum topics, or bot routing
-entries. Do not use tmux send-keys from Codex unless there is no safer direct
-command path.
+Do not create local desktop/session windows, chat forum topics, or bot routing
+entries. Prefer direct remote commands over terminal injection.
 
 ## Remote Session Pattern
 
@@ -95,8 +94,8 @@ uisai2 上已启动 session `lean-batch`，路径 `/var/tmp/shen_p2`，命令是
 
 ## Do Not
 
-- Do not modify Telegram bot routing or forum topics.
+- Do not modify bot routing or forum topics.
 - Do not assume a local `zinan` tmux session exists.
-- Do not use Claude launcher commands.
+- Do not use non-Codex launcher commands.
 - Do not force-kill ambiguous tmux sessions.
 - Do not run destructive remote cleanup without explicit permission.

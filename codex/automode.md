@@ -45,10 +45,8 @@ Use only Codex-native primitives:
 - Use shell commands for builds, tests, grep, git, `gh`, and repo scripts.
 - Use `git` commits as the durable audit trail.
 - Use Codex user-visible progress updates and final responses instead of
-  Telegram-specific tooling.
-- Use normal shell processes or Codex command sessions for long commands; do not
-  rely on Claude-only `run_in_background`, MCP tools, tmux send-keys, or Agent
-  subagents.
+  external chat-bot tooling.
+- Use normal shell processes or Codex command sessions for long commands.
 
 If parallel external reasoning is needed, use the Codex-adapted `/chatgpt`
 workflow in `codex/chatgpt.md`. Codex remains responsible for verification.
