@@ -27,6 +27,33 @@ Load the Lean 4 formalization playbook, project context, and the hard-won workin
    - Report partial progress honestly as `partial`/AUX; never inflate to PASS. Tag each result
      unconditional / conditional-on-X (X proved/not) / auxiliary.
 
+   **Stop-and-audit when an assembly keeps spawning "one more producer" (the never-bottoming-out fingerprint):**
+   - When a conditional assembly keeps reducing to "just one more residual / tail / producer" round after
+     round (≥3–4 rounds) WITHOUT ever bottoming out at its base hypotheses, that pattern is the FINGERPRINT
+     of a STRUCTURAL mis-framing — NOT genuine difficulty. STOP grinding the next layer and trigger the §3.3
+     adversarial audit (self + codex + ChatGPT, in parallel). Grinding "one more layer" each round is a
+     disguised 退堂鼓; the user should not have to be the one to call "something is wrong, go audit".
+   - Audit checklist for "why won't it close" (assume there IS a structural error; find it):
+     · **Redundant producer** — is the "new" hypothesis ALREADY discharged by a result you closed elsewhere,
+       but the wrapper re-demands it as a fresh hypothesis instead of CONSUMING the closed theorem? Wire the
+       closed result; don't re-prove.
+     · **Wrong gate / predicate shape** — is an interface built on a RAW/STATIC gate (or a predicate you
+       already discredited) while the closed route uses the STOPPED-PROCESS / monotone / killed-kernel shape?
+       A raw/static gate re-demands the same tail FOREVER. Make every sibling interface use the same
+       stopped/monotone object the closed route uses.
+     · **Double-counting** — does the final wrapper consume both a closed result AND a staged path that re-does
+       the same probabilistic work (e.g. driving the same quantity to its target twice)? Keep one route.
+     · **Over-decomposition** — compare your stage structure to the SOURCE PROOF's actual structure. If the
+       formalization has more stages / entry-gates than the paper's argument needs, the extra entry-tails are
+       ARTIFACTS; collapse them. The correct repair is usually ONE-STEP and COLLAPSING (consume closed result
+       + swap to the stopped gate + drop the double-count), not additive. Only if the audit finds a GENUINELY
+       new tail (not an artifact) is it a real producer — then name it precisely and discharge it.
+   - **Killed-object hygiene** — when you eliminate a false/discredited object (a non-monotone "floor", an
+     unsatisfiable invariant, a too-strong predicate, a static cover that should be a stopped/killed kernel),
+     grep ALL its uses and purge every one. It will survive in a SIBLING definition / gate / interface and
+     re-spawn the exact obstruction you thought you killed. Replacing it on one route is not enough — the
+     stale sibling keeps the bug alive and the assembly "forever rediscovers" the same producer.
+
    **Multi-agent dispatch ("分头打"), running codex on uisai1 via tmux + HANDOFF/:**
    - One file, one writer. Agents create only their own NEW file; never touch `<Lib>.lean` / `Audit.lean`
      (you wire the import graph + `#print axioms` yourself). **`Audit.lean` keeps its OWN import list** —
