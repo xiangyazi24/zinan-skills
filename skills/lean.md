@@ -81,6 +81,24 @@ Load the Lean 4 formalization playbook, project context, and the hard-won workin
      to feed several tabs, dispatch-before-process. The §1.1 design brainstorm and §4 statement audit are
      **ChatGPT/Codex-driven by default, not solo**. See `/chatgpt` skill + memory `feedback_proactive_chatgpt`.
 
+   **NEVER ask Xiang to adjudicate math / Lean-technical / correctness questions — resolve them yourself (Xiang 2026-06-19, after an over-escalated protocol-encoding bug: "我不拍板, 我不懂, 你不要问我数学. 你有 paper, 有 python 可以编程验证, 有 chatgpt pro 可以问").**
+   - Xiang does **not** adjudicate mathematics or proof-engineering. The instant you catch yourself writing
+     "should we fix this? / which route? / is this a bug? / your call" to him about a technical/math point —
+     STOP. That is the banned over-escalation. You have three tools that settle it without him:
+     · the **source/paper** = ground truth on faithfulness, definitions, statements (`pdftotext` + grep the
+       actual lemma/definition; the paper decides whether the encoding is a bug, not Xiang);
+     · **python / the build** = empirical fact (write a script, run the scoped build, measure the ripple —
+       facts, not opinions);
+     · **ChatGPT Pro** (repo-connected) = cross-check on the hard fork (`ask-gpt.py`).
+   - **Litmus: if the paper or a build can answer it, it is NOT a question for Xiang.** "Is the Lean update
+     `min` when the paper says `max`?" → read the paper, it's a bug, fix it, rebuild, report the RESULT. Decide
+     → verify → execute → report the outcome; never hand him the question.
+   - The ONLY calls that are genuinely Xiang's: **method-downgrade** (relaxing/weakening the *problem* — see
+     `/automode` "method-flexibility is Xiang's call"), authorship/signature, external-facing/destructive ops,
+     frozen-paper edits. A faithfulness fix the source unambiguously dictates is **correctness, not a
+     downgrade** — so you just do it. Don't confuse "this changes a core definition / ripples widely" with
+     "this needs Xiang"; ripple is measured by a build, not by his opinion.
+
 4. **Engineering discipline** (SSExactMajority 2026-05-24/25 war):
    - **File > 2000 lines → split first** (5 min job, not "1-2 days"). Split by `/-!` section headers.
    - **maxHeartbeats ≥ 8M proofs → separate file**. Otherwise every edit to the same file triggers 15-60 min recompile. E.g. TimerDrainProof.lean (heavy, compile once) + BridgeProof.lean (light, edit freely).
