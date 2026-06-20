@@ -1,5 +1,5 @@
 ---
-description: "Ask ChatGPT (web, incl. Pro/Extended) via the local bridge for collaborative research/audit. Call it with one script — `python3 ~/.openclaw/workspace/scripts/ask-gpt.py <channel> \"question\"` — which blocks and prints ChatGPT's answer (the channel's tab has a GitHub repo connected). Often run as multiple rounds (R1, R2, ...). PROACTIVE DEFAULT, not a last resort: the reflex on ANY hard research/proof sub-point (a hard lemma, a tactic chain you can't see through, a modeling/design fork, an 'is X true') is to fire a grounded question to ChatGPT FIRST and verify in parallel — don't do long solo analysis while ac/ac2 sit idle (Xiang 06-15: '你为什么不会主动找 chatgpt 呢?'). Also fires whenever Xiang says '问 ChatGPT', '让 ChatGPT 看看', '和 ChatGPT 磋商', 'ChatGPT 协作模式', etc."
+description: "Ask ChatGPT (web, incl. Pro/Extended) via the local bridge for collaborative research/audit. Call it with one script — `python3 ~/.openclaw/workspace/scripts/ask-gpt.py <channel> \"question\"` — which blocks and prints ChatGPT's answer (the channel's tab has a GitHub repo connected). Often run as multiple rounds (R1, R2, ...). PROACTIVE DEFAULT, not a last resort: the reflex on ANY hard research/proof sub-point (a hard lemma, a tactic chain you can't see through, a modeling/design fork, an 'is X true') is to fire a grounded question to ChatGPT FIRST and verify in parallel — don't do long solo analysis while ac/ac2 sit idle (Xiang 06-15: '你为什么不会主动找 chatgpt 呢?'). Also fires whenever Xiang says '问 ChatGPT', '让 ChatGPT 看看', '和 ChatGPT 磋商', 'ChatGPT 协作模式', etc. Sub-command '/chatgpt clear' (also '清/重启/全清 bridge') runs scripts/bridge-clear.sh: a full bridge reset — stop, wipe all data (keep login token), restart clean."
 user-invocable: true
 ---
 
@@ -43,6 +43,44 @@ The reflex instead:
 Any of: `/chatgpt`, "问 ChatGPT", "让 ChatGPT 看看", "ChatGPT 协作模式",
 "和 ChatGPT 磋商", "丢给 ChatGPT", "提问 ChatGPT". If Xiang's intent is
 unclear (e.g. "ChatGPT 怎么看"), ask once whether to dispatch.
+
+**Sub-command `clear`** — `/chatgpt clear` (also: "清 bridge / 重启 bridge /
+bridge 全清 / 把 bridge clear / 全面重启 bridge") is NOT a question to ChatGPT.
+It runs a full bridge reset; see "## /chatgpt clear" below. Don't call
+`ask-gpt.py` for it.
+
+## /chatgpt clear — full bridge reset
+
+`/chatgpt clear` runs ONE script that stops the bridge, wipes ALL accumulated
+data, and restarts it clean:
+
+```bash
+bash ~/.openclaw/workspace/scripts/bridge-clear.sh
+```
+
+What it does (encodes the manual reset Xiang did 2026-06-19):
+- `launchctl bootout` the `com.huangx.chatgpt-bridge` agent (stops it AND
+  prevents KeepAlive from respawning mid-wipe).
+- Trash everything under `~/.chatgpt-bridge` **except `token`** (the ChatGPT
+  login credential — never delete it, or Xiang must re-login). This clears
+  `bridge.sqlite` (the big one, ~300 MB when bloated), `runs.log`,
+  `ASK_LEDGER.md`, etc.
+- Trash `/tmp/chatgpt-bridge` (result `.md` / images / push.log / connstate)
+  and truncate `/tmp/chatgpt-bridge.log`.
+- `launchctl bootstrap` it back → server recreates an empty `bridge.sqlite`
+  (`CREATE TABLE IF NOT EXISTS`).
+- Verify: process up, `:8801` listening, fresh DB, `/api/diag` responds.
+
+Rules:
+- Data goes to **Trash (reversible)**, not `rm`. The script prints how much was
+  cleared; tell Xiang he can empty Trash to reclaim the disk.
+- The script is self-verifying — relay its final `✅ CLEAR COMPLETE` / `✗` line.
+- `:8801` is the bridge. **`:8800` is the wiki-server — never touch it.**
+- After clearing, the ChatGPT browser tabs reconnect on their own (extension
+  polls); remind Xiang to refresh/restart the plugin if a tab looks stale.
+- `clear` wipes in-flight tasks too (for a full reset that's the point) — note
+  it also clears `ASK_LEDGER.md`, so any outstanding `✗ NEEDS-PASTE` rows are
+  gone after a clear.
 
 ### Trigger sources
 
