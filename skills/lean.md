@@ -108,7 +108,11 @@ Load the Lean 4 formalization playbook, project context, and the hard-won workin
    - **Factored decomposition > unfold entire function**. Don't `unfold transitionPEM` (term explosion → simp maxRecDepth). Factor into small helpers (like Phase0Transition p0r1s..p0r5t), prove properties on each helper.
    - **Statement audit before axiom/sorry**: let GPT-5.5 find counterexamples. False axiom >> sorry (sorry gets caught, false axiom gets trusted).
 
-5. **Maintain a CHECKLIST view — the "挨个 check 掉" discipline (Xiang 2026-06-17).**
+5. **Maintain a CHECKLIST view — the "列清单挨个磨, 挨个钩" discipline (Xiang 2026-06-17, reaffirmed as 老规矩 2026-06-21).**
+   This is the STANDING DEFAULT for any multi-sorry / multi-axiom / multi-atom Lean campaign — not a
+   special mode and not something to wait for Xiang to request. The MOMENT a campaign has more than ~2
+   open gaps (sorries, custom axioms, named seams, sub-lemmas), make the board FIRST, then grind. "老规矩,
+   列清单挨个磨, 挨个钩" = enumerate the finite list, grind each item, flip its box the moment it verifies.
    A big formalization feels 无休无止 (endless) when tracked as a sorry-pile. Convert it into a FINITE,
    NAMED atom board you check off one by one — that is the feeling Xiang wants ("我喜欢这种挨个 check 掉的感觉").
    - **Decompose into a finite atom set, grounded in the ACTUAL structure — not guessed.** Find the top
@@ -122,9 +126,10 @@ Load the Lean 4 formalization playbook, project context, and the hard-won workin
      section for things the headline theorem needs that aren't atoms (correctness half, the assembly
      constructor, escape/satisfiability audits). End with an honest scoreboard (`k/N` done) + a
      `Last verified:` line. This file SURVIVES sessions and is the single source of truth.
-   - **Report the board EVERY turn going forward** once Xiang asks for it. Cite the file; show which slot
-     moved. Clearing one atom = flipping one box ⬜/🟡 → ✅. Mirror it into the in-session TaskList
-     (one task per OPEN atom) so the spinner reflects the board.
+   - **Report the board EVERY turn going forward** — by default, proactively, from the moment the board
+     exists (老规矩; no need to wait to be asked). Cite the file; show which slot moved. Clearing one atom
+     = flipping one box ⬜/🟡 → ✅. Mirror it into the in-session TaskList (one task per OPEN atom) so the
+     spinner reflects the board.
    - **`✅` is reserved for genuinely-discharged, sorry-free, axiom-clean.** A conditional wrapper that
      carries a satisfiable hyp is `🟡`, never `✅` — honest-labeling (§3.3) applies to the board too. When
      a survival "core" is sorry-free but carries an abstract escape, mark `✅ (escape-audit pending)`, don't
