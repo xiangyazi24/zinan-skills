@@ -182,6 +182,68 @@ Load the Lean 4 formalization playbook, project context, and the hard-won workin
      data (`pos`, `tri`) + convex well-formedness (`tri_inj`, supporting/strict halfspace) + `complete`;
      everything combinatorial/topological is a clean-3 theorem. ~57k lines (ch13+ch35), 0 sorry, 0 native.
 
-7. Report: "Playbook + tactics loaded. [N] sorry found. [If a CHECKLIST exists: k/N atoms ✅.] Ready for Lean work."
+7. **The adversarial-discharge loop — turning a "all-conditional, no real theorem" repo into genuine landed reductions (Shen trilogy, 2026-06).**
+   The failure this beats: a whole formalization that is `#print axioms`-clean with zero `sorry` and yet
+   proves NOTHING — every headline is a conditional theorem carrying a pile of hypotheses that LOOK
+   satisfiable but are never discharged. **Mechanical-green ≠ real content.** The fix is a per-brick loop
+   that makes the default reflex *delegate → hostile-audit → land only what survives*, and it is portable to
+   any Lean project where a strong grinder (codex) produces discharges you must trust.
+
+   - **The loop (one brick at a time).** codex grinds a discharge → an INDEPENDENT, read-only, HOSTILE opus
+     auditor whose default is *"this is fake — break it"* → commit ONLY on a clean verdict. The author agent
+     AND the orchestrator (you) share a blind spot; neither counts as review. Spawn a separate adversary.
+
+   - **The verdict taxonomy — name the failure modes that pass mechanical-green, so the auditor has a checklist.**
+     · **GENUINE-NET-REDUCTION** — the ONLY commit-worthy verdict: the headline's transitively-carried free
+       analytic hypotheses STRICTLY decreased, the removed hypothesis is genuinely DERIVED (proof read, not a
+       re-posit), and the conclusion type is byte-identical. Commit.
+     · **NO-OP** — internal rewiring that stops *consuming* a field but does NOT *delete* it from the structure
+       + constructors → the construction obligation is unchanged. Zero headline progress dressed as progress.
+       Do not commit it as a reduction; take the deletion it set up.
+     · **RENAME-CARRY** — the field is "removed" but relocated/renamed into a sub-structure that is itself
+       carried free → frontier unchanged.
+     · **FANOUT-INCREASE** — removing 1 field ADDS ≥1 new free fields → a net increase disguised as a reduction.
+     · **VACUITY** — the conclusion was silently WEAKENED (e.g. a solution-ness field dropped while the headline
+       still claims "a solution") → the theorem now asserts less. Reject hard.
+     · **FRAGMENT-mislabel** — a real but PARTIAL brick (one term of an inequality, one leg of the bound)
+       reported by codex as "proved the main theorem"; the headline does not consume it. Keep the brick, reject
+       the label, re-attack the real core.
+     · **UNSATISFIABLE-FRONTIER / TOO-STRONG** — a carried hypothesis (a parameter condition, a ∀-field) has NO
+       producer / no witness anywhere → never dischargeable, the theorem is vacuously true. `#print axioms`
+       cannot detect this.
+
+   - **How the auditor actually breaks it (the mechanics).**
+     · **Net-free-hypothesis count** — `git show HEAD:file` (before) vs the workdir (after); count the headline's
+       transitively-carried hypotheses both ways. Strictly fewer, or it is not a reduction. Diff the structure
+       and the constructors, not just the headline signature.
+     · **Read the proof term, never the codex report** — codex overstates ("proved X") when it proved one term
+       of X. Read the actual conclusion type + TRACE how the hard step is established vs assumed-away. Verify the
+       discharged field is a genuine THEOREM `…_of_classical (hsol) : …`, not a re-posited structure field.
+     · **Satisfiability witness** — every carried hypothesis needs a producer/`Nonempty` instance or a concrete
+       satisfying-parameter witness. `grep` for any producer of the carried Prop; none ⇒ relocated-undischargeable.
+     · **Faithfulness grep** — a "derive field F" proof that secretly does `exact X.F` is circular and passes
+       lake-green; `grep` the proof body for the field name, it MUST be empty.
+
+   - **Root-build EVERY commit, not per-paper (the gate that catches drift).** A file dropped from the headline's
+     import closure still ships in the repo; a fatal error in it (duplicate decl, broken proof) surfaces ONLY at
+     the full `lake build <RootLib>`, never at a per-module `.Statements` build. Per-module verification silently
+     let `main` drift to non-root-building for several commits. Land behind a **fresh-checkout-of-origin/main +
+     full root build** clean-3 gate. For speed, keep a persistent warm build clone (a dedicated remote tmux:
+     `git fetch && git reset --hard origin/main && lake build <Root>`, record the exit code) for iteration, and
+     reserve a COLD fresh clone for the final "this paper is DONE" gate (a warm clone can mask a stale-olean bug).
+
+   - **Honest labeling is the bar above any milestone.** conditional is conditional, fragment is fragment. Land
+     the genuine brick with a commit message stating EXACTLY what is proved vs what is still carried (name the
+     open atoms). Never let "axiom-clean" mean "done". When codex overstates, the visible signal is the audit
+     verdict + the corrected accounting, not the green build.
+
+   - **The payoff.** This converts a hopeless "everything's conditional" repo into a FINITE frontier of named
+     hard cores — each headline reduces to its genuine analytical main theorem (e.g. a C³ Schauder bootstrap, a
+     logistic-absorption energy inequality, a spectral-agreement frontier), which you then grind one at a time.
+     The turning point is not speed; it is blocking the fakes so the real reductions are trustworthy. Pair with
+     §3.3 (the failure-mode catalogue), the CHECKLIST board (§5), and `/fable` (Fable-as-master: design the
+     route + dispose of deliverables, delegate the grind).
+
+8. Report: "Playbook + tactics loaded. [N] sorry found. [If a CHECKLIST exists: k/N atoms ✅.] Ready for Lean work."
 
 $ARGUMENTS is an optional project path. If provided, cd there first.
