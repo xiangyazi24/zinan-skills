@@ -134,6 +134,54 @@ Load the Lean 4 formalization playbook, project context, and the hard-won workin
      tends to expand 1–2 sub-layers when pushed, so even the count is a lower bound). See `/automode`
      fingerprint rules + memory `project_exactmajority_phase_board` for the canonical example.
 
-6. Report: "Playbook + tactics loaded. [N] sorry found. [If a CHECKLIST exists: k/N atoms ✅.] Ready for Lean work."
+6. **Derive structure from primitives — eliminate well-formedness / compatibility fields (Cauchy-rigidity ch13 campaign, 2026-06).**
+   A structure FIELD is either *definitional data* or a *derivable theorem in disguise*. Audit every
+   "well-formedness" / "closed-surface" / "compatibility" field: can it be proved from the geometric/primitive
+   fields (+ one honest geometric completeness hypothesis)? It usually can — leaving it as a field is an
+   un-eliminated assumption hiding in the object.
+   - **Combinatorial/topological structure is downstream of geometry.** The closed-surface skeleton of a
+     convex polytope — each edge in exactly two facets, each vertex link a single cycle, consistent face
+     orientation, sphere-ness (connected + Euler=2), rotation-faithfulness, degree≥3 — are all CONSEQUENCES
+     of convexity + "the listed faces are exactly the facets of conv(vertices)" (a `SimplicialFacetComplete`
+     predicate). They were carried as structure fields/axioms; all got DERIVED as theorems.
+   - **Redundant data + a compatibility axiom ⇒ eliminable.** If you store a quantity that the primitives
+     already determine (a face's outward `normal`) AND an axiom that it is compatible (`0 < det3 … normal`),
+     DEFINE the quantity from the primitive (`normal := cross` of the cyclic-vertex-order edges) and the axiom
+     collapses to a triviality (`det3 (u) (v) (cross u v) = ‖cross u v‖² > 0`, nondegeneracy from
+     strict-support + ≥4 vertices). The orientation then lives ENTIRELY in the cyclic vertex order — pure
+     definitional data, no "orientation axiom".
+   - **The definition-vs-theorem-vs-assumption test (Xiang 2026-06).** If a field is definitional, accept it
+     and do NOT call it an "irreducible assumption you couldn't eliminate" — that framing is *incoherent*
+     (不通). If it is a theorem, prove it from primitives. There is no third "irreducible field" category: a
+     field is data you define, or a consequence you derive. The mirror argument ("orientation can't come from
+     *unoriented* data") justifies the cyclic order as definitional INPUT — it does NOT justify keeping a
+     separate normal + compatibility axiom.
+   - **Mathlib-gap reformulations (reach for elementary, not the missing heavy machinery).** Mathlib lacks
+     normal cones / extreme rays / a polytope face lattice / ∂(convex)≅Sⁿ⁻¹. Don't build them; reformulate:
+     · *edge of a full-dim 3-polytope lies in exactly two facets* → **shadow-slope**: pick coords transverse
+       to the edge, min/max slope over the other vertices give the two supporting facets (no cones).
+     · *vertex link / facets-at-a-vertex is connected (single cycle)* → **potential descent**: generic linear
+       functional X; every non-X-min exposed vertex has a strictly-lower X adjacent vertex via the one
+       geometric lemma `local_tangent_cone` (Q ⊆ apex + cone of the two incident edge directions); finite
+       descent ⇒ connected (no Jordan / ∂≅S²). Build only `local_tangent_cone`; the rest is det2 + finite order.
+     · transport 3D↔2D via an explicit **chart** (`τ : ηᗮ ≃ₗ E2`) + a **homogenization** identity
+       `L s − L p = h(s)·(ℓ(ρ s) − C)`, not by transporting `IsExposed` across an affine map (Mathlib has no
+       affine-image lemma for `IsExposed`).
+   - **Faithfulness grep — the cheap §3.3 catch for "derive field F".** A proof of `F_of_complete (X) (h) : …`
+     that does `exact X.F` is a circular cheat that passes lake-green + `#print axioms` clean. After any
+     "derive a field" task, `grep` the proof body for the field name (`\.opposite_side_unique` etc.); it MUST
+     be empty. Caught codex doing exactly this once; force geometry-only proofs and grep to confirm.
+   - **To actually REMOVE a field (not just prove it redundant): split + re-parametrize + reconstruct.** Split
+     the structure into `Core` (primitive data only) + the predicate; re-parametrize the derivations onto
+     `Core` (binder change `X : Full → C : Core` — proofs transfer because they never used the field); the
+     user-facing object = `Core` + the genuine geometric primitive (`SimplicialConvexBody := Core + complete`);
+     build the full object via `toClosed` that FILLS the now-derived fields from the derivations. Preserve the
+     public name with `abbrev Full := Closed` / `Closed extends Core` so downstream is untouched; verify with a
+     FULL `lake build` + `#print axioms` clean-3 on the headline applied to the reconstructed witness.
+   - Net result of one such campaign: the user-facing convex-polytope object's only inputs became geometry
+     data (`pos`, `tri`) + convex well-formedness (`tri_inj`, supporting/strict halfspace) + `complete`;
+     everything combinatorial/topological is a clean-3 theorem. ~57k lines (ch13+ch35), 0 sorry, 0 native.
+
+7. Report: "Playbook + tactics loaded. [N] sorry found. [If a CHECKLIST exists: k/N atoms ✅.] Ready for Lean work."
 
 $ARGUMENTS is an optional project path. If provided, cd there first.
