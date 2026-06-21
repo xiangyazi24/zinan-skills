@@ -42,7 +42,25 @@ draft: false
 ## Signature (every post ends with one)
 
 - One curated line — Chinese classical preferred (occasionally Western), **中英对照**, that **resonates with THIS post's theme**, chosen for this post, not pulled from a fixed pool. Format: original + source + English gloss.
-- **Must not repeat a prior signature.** BANNED: 「工欲善其事，必先利其器」(《论语》, overused). Before choosing, scan what's been used: `grep -rhA3 '^---$' ~/.openclaw/workspace/zinan/infsup-site/content/{en,cn,math}/*.md | grep -E '《|—' | tail -40` (or read the tails of recent posts). Known-used incl. 「致广大而尽精微」(010), 「依乎天理，批大郤，导大窾」(022, Zhuangzi).
+- **Must not repeat a prior signature — pick a source/line NOT in the USED list below.** Two-step guard: (1) consult the list; (2) re-scan to catch anything the list missed or any new post:
+  `for f in ~/.openclaw/workspace/zinan/infsup-site/content/{en,cn,math}/*.md; do tail -8 "$f"; done | grep -E '《|》|— *[A-Z《]|――'`
+  **After publishing each post, APPEND its signature's source+line to the USED list below** (this is what keeps the guarantee real).
+
+  **USED (do NOT reuse — by source + opening words; any line from these counts as used):**
+  - 《荀子·劝学》— 「君子生非异也，善假于物也」/「积土成山，风雨兴焉」
+  - 《礼记·中庸》/《中庸·二十七章》— 「博学之，审问之…」/「致广大而尽精微」(010)
+  - 朱熹《观书有感》— 「问渠那得清如许，为有源头活水来」
+  - 《左传·定公十三年》— 「三折肱，知为良医」
+  - 《庄子·养生主》— 「依乎天理，因其固然」/「依乎天理，批大郤，导大窾」(022)  ← 整篇养生主已用过，换别的篇
+  - 《周易·系辞》(上/下)— 「穷则变，变则通，通则久」/「大衍之数五十」
+  - 《孟子》— 「行有不得，反求诸己」(离娄上)/「君子有终身之忧，无一朝之患也」(IV.B.28)
+  - 《礼记·大学》— 「物有本末，事有终始，知所先后则近道矣」
+  - 《道德经》— 四十章「天下万物生于有，有生于无」/ 四十一章
+  - 《论语·为政》II.11 — 「温故而知新」
+  - 《论语·卫灵公》— 「工欲善其事，必先利其器」 ← **明令禁用(爸爸点名)**
+  - 苏轼《赤壁赋》 · 刘禹锡《浪淘沙》「千淘万漉虽辛苦，吹尽狂沙始到金」 · 陆游《游山西村》「山重水复疑无路…」 · 陆游《冬夜读书示子聿》 · 元好问《论诗三十首》
+  - 西方:Dijkstra(adapted)· Francis Bacon《Novum Organum》· Louis Pasteur 1854(prepared mind)· Lucretius《De Rerum Natura》I.155(nothing from nothing)
+  (源头富矿尚未动用:王阳明、苏轼其余篇、杜甫、王国维《人间词话》、《史记》、韩愈、《淮南子》、张载、程颢、墨子、列子……按主题挑。)
 - 不掉书袋、不小女生气。If nothing truly fits, leave it out. 「文章千古事，字字不易」— run the chosen line by Xiang before publishing.
 
 ## Workflow: draft → self-check → review → push → VERIFY LIVE
