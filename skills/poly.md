@@ -37,6 +37,24 @@ Money runs as the **mother's side business** (KYC/funding under her name, like
   bet on their own campaigns / used classified intel). Edges must be **public
   information + logic only**.
 
+## Live auth (Kalshi) — status & setup
+
+- **Connected, read-only, verified 2026-06-20** on **production** ($100 balance,
+  0 positions). Order placement is **NOT wired** — pending sandbox validation +
+  per-order confirmation (see staging below).
+- **Credentials live in `~/.kalshi/`** (NEVER the repo): `kalshi.pem` (RSA private
+  key, `chmod 600`) + `kalshi.keyid` (the Key ID). Created at
+  kalshi.com/account/profile → API Keys (private key shown once).
+- **Signer**: `~/.openclaw/workspace/scripts/kalshi-auth.py` (RSA-PSS, loads from
+  `~/.kalshi/`, `--env prod|demo`). Read-only summary:
+  `python3 ~/.openclaw/workspace/scripts/kalshi-account.py --env prod`.
+  Base URLs: prod `api.elections.kalshi.com/trade-api/v2`, demo
+  `demo-api.kalshi.co/trade-api/v2`.
+- **Staging to live orders** (do in order): (1) order-flow test on **demo/sandbox**
+  (fake money, separate demo key); (2) production read-only [DONE]; (3) production
+  **confirmation-gated, tiny** — I show ticker/side/size/price, you OK each, never
+  silent. And only once the paper log actually shows an edge — right now it does not.
+
 ## Two legs (switchable any time)
 
 Same pipeline; only recording/execution differs. Mode in
