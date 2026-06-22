@@ -5,9 +5,10 @@ Load the Lean 4 formalization playbook, project context, and the hard-won workin
    - §2.7 **multi-agent orchestration** (the "分头打" parallel-codex discipline)
    - §3.2 codex/agent output review (4 extra steps)
    - §3.3 **三方对抗审查** (three-way adversarial faithfulness audit: self+codex+ChatGPT cross-check; catalogue of failure modes that pass mechanical-green — VACUOUS conditional theorems via unsatisfiable hypotheses, too-strong predicates, contract-field/parameter-coupling bound inflation; `#print axioms` can't detect an unsatisfiable premise)
+   - §1.3 **文档纪律 (爸爸 2026-06-22 点名)** — 要写文档就**只写一个专档 = 项目根的 `UNDERSTANDING.md`**,跑 Lean 时在关键节点(收口残差/里程碑/换方向/发现旧理解错/session 边界)**就地维护它**;**绝不撒** `DOCTRINE_*`/`HANDOFF_*` 指路文/`*_INVENTORY`/`*_LEDGER`/带日期快照的并行文件(写完即烂、互相矛盾、反过来骗人);**默认不信任**任何文档说的"还欠什么/已完成什么",一律 grep sorry / import 闭包 / `#print axioms` 代码现算。记忆 `feedback_no_unmaintained_index`、`project_doty_clock_doctrine_stale`。
 
 2. If in a Lean project directory (has `lakefile.lean` or `lakefile.toml`):
-   - Read `UNDERSTANDING.md` if it exists
+   - Read `UNDERSTANDING.md` if it exists — **this is the ONE maintained doc; if you write/update anything this session, update it in place, don't spawn a new doctrine/handoff/snapshot file (§1.3)**
    - Read `HANDOFF.md` if it exists
    - Read any `*_CHECKLIST.md` (the atom board, see §5) if it exists — and lead the session by reporting it
    - Run `rg -n 'sorry|admit' --glob '*.lean' .` to show current gaps
