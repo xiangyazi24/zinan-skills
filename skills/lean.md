@@ -311,3 +311,18 @@ proof and makes the `linear_combination` unprovable over a general ring; splitti
 ring-general and reusable, and surfaces the exact nonvanishing lemma + edge cases you still owe.
 **How to apply:** Any EDS/recurrence/division-polynomial induction whose step is a ratio identity (Ward
 conservation→InvarRel→gap-step were all built this way).
+
+### [2026-06-22] Borrow the repo's OWN probability/analytic library before proving a base brick from scratch
+A mature formalization repo accretes its own concentration/analytic toolbox (Chernoff, Azuma, Janson,
+Bennett, Freedman, MGF-tail, first-passage). When an assembly bottoms out at a probabilistic/analytic base
+fact, `rg` the repo's `Probability/` (or equivalent) dir FIRST — the brick is usually already proven there,
+often under a project-specific name (`*.syncFail_le`, `seam_atRiskTail_of_entry`, …). Reaching straight for a
+from-scratch proof or declaring a "Mathlib gap" is the slow default and frequently re-derives what the repo
+already owns. Grep name-variants of the inequality SHAPE, not just the exact lemma name.
+**Why:** Framed several base seam/drift facts as fresh obligations when the repo's own `ClockBudgets`,
+`BennettLemma`, `FreedmanBound`, MGF modules already supplied most of them. Xiang's correction:
+"概率的东西不要全部从正，借用…先调研再动手." This generalizes verify-before-claim from "is it open?" to
+"did WE already close it?" — pairs with memory `feedback_grep_repo_before_gap`.
+**How to apply:** The moment a base analytic/probabilistic inequality appears in an assembly, before writing
+any proof or citing Mathlib: `rg` the repo's probability dir for the inequality shape + plausible name
+variants. Only build from scratch (or escalate to Mathlib/ChatGPT) after that survey comes up empty.
