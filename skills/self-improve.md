@@ -92,11 +92,32 @@ user-invocable: true
 - 超过 30 条（~500 行）→ 触发压缩：合并重叠、删除被 supersede 的旧条目
 - **写完必须 git commit 落盘**（见下方并发控制）
 
-### 完成后
+### 完成后：汇报到 DM
 
-Telegram 简短报告：
-- "温习了 /lean skill，没有新经验要加。"
-- "温习了 /lean skill，新增 1 条：<标题>。"
+**不管从哪个窗口触发，汇报统一发到 DM（chat_id 8672648562）**，方便爸爸在一个地方监控所有 skill 的进化。
+
+用 `telegram_reply` 发送，格式：
+
+有新增时：
+```
+[self-improve] lean (research窗口)
+温习 ✓ | 新增 1 条：<标题>
+当前 Learned Tactics 共 N 条
+```
+
+无新增时：
+```
+[self-improve] lean (dm窗口)
+温习 ✓ | 无新增
+```
+
+锁冲突时：
+```
+[self-improve] lean (dm窗口)
+温习 ✓ | 另一个 session 正在写入，本次跳过改进
+```
+
+**窗口名从 `tmux display-message -p -t "$TMUX_PANE" '#W'` 获取。**
 
 ## 多 Session 并发控制
 
