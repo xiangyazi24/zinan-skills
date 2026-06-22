@@ -316,3 +316,22 @@ already owns. Grep name-variants of the inequality SHAPE, not just the exact lem
 **How to apply:** The moment a base analytic/probabilistic inequality appears in an assembly, before writing
 any proof or citing Mathlib: `rg` the repo's probability dir for the inequality shape + plausible name
 variants. Only build from scratch (or escalate to Mathlib/ChatGPT) after that survey comes up empty.
+
+### [2026-06-22] De-axiomatizing: audit the hypotheses the axiom let you SKIP, first
+Removing a custom axiom that directly concludes a goal which a long *conditional* theorem chain also
+concludes means you must now discharge that chain's full hypothesis bundle. The prime vacuity suspects are
+the hypotheses that ONLY the axiom-path let you skip — carried unused through every level of the chain and
+never discharged anywhere in the existing tree. Before grinding any discharge or building integration on top,
+locate where the axiom plugs in, enumerate the hypotheses it short-circuits, and verify each has a
+producer/satisfiability witness.
+**Why:** A regularity/continuity hypothesis about a composite — e.g. `Continuous (indicator ∘ trajectory)`
+where the indicator is a step/threshold and the trajectory is a continuous ODE solution that actually crosses
+the threshold — can be flatly UNSATISFIABLE (step ∘ continuous-crossing = Heaviside jump), yet the headline
+still builds green and `#print axioms`-clean because the axiom bypasses that whole sub-chain. Caught only by
+checking that the existing "complete" headline reaches its conclusion *via the axiom*, never via the
+hypothesis. Faithful fix was a continuous (Bernstein-polynomial) realization of the indicator, threaded
+additively at the use-site so the chain's other (abstract) uses were untouched.
+**How to apply:** First move of any de-axiomatization — map the axiom's plug-in point, list the conditional
+chain's hypotheses it skips, satisfiability-audit each (find the producer/witness) BEFORE committing effort.
+A "Continuous (step/snap/threshold ∘ continuous-flow)" obligation is unsatisfiable wherever the flow crosses;
+realize the discontinuous object as a continuous polynomial. Pairs with §3.3 + §7 UNSATISFIABLE-FRONTIER.
