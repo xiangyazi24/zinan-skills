@@ -5,108 +5,160 @@ user-invocable: true
 
 # /self-improve — Skill Self-Improvement Loop
 
-让 skill 从实战中进化。每次触发执行三步：温习 → 总结 → 改进。
+让 skill 从实战中进化。用法：`/self-improve <skill-name>`（如 `/self-improve lean`）。
+
+每次触发执行三步：温习 → 总结 → 改进。
 
 ## 触发方式
 
-1. **手动**：`/self-improve lean`（或任何 skill 名）
-2. **Cron 自动**：每 3 小时注入活跃的 research/dm session（见下方 Cron 配置）
-3. **PostCompact hook**：context 压缩后自动提示重新加载当前 skill
-4. **口头**："温习一下 lean skill"、"skill 进化"、"总结经验到 skill 里"
+1. **手动**：`/self-improve lean`
+2. **Cron 自动**：每 3 小时，cron 写 marker → PostCompact 时检测 → 提示 agent 执行
+3. **口头**："温习一下 lean skill"、"skill 进化"、"总结经验到 skill 里"
 
 ## 三步流程
 
 ### Step 1: 温习（Refresh）
 
-重新加载目标 skill 文档，强制刷新约束记忆。
+完整重新加载目标 skill 文档：
 
 ```
 读 ~/repos/zinan-skills/skills/<skill-name>.md（完整读，不跳）
 ```
 
-读完后在心里过一遍：**这个 skill 的核心约束是什么？我这几个小时有没有偏离？** 如果有明显偏离，在 Telegram 简短报告："温习完毕，发现我 drift 了 XXX，已纠正。"
+读完后内部检查：**核心约束是什么？这几个小时有没有偏离？** 有明显偏离就纠正并在 Telegram 简短报告。
 
 ### Step 2: 总结（Reflect）
 
 回顾本 session 中与该 skill 相关的工作，提取候选经验。
 
-**提问自己这些问题（内部思考，不输出）：**
+**自问（内部思考，不输出）：**
 
-1. 这次 session 里我踩了什么坑？根因是什么？
-2. 哪个做法特别有效，以前 skill 里没写？
+1. 踩了什么坑？根因是什么？
+2. 哪个做法特别有效，skill 里没写？
 3. 爸爸纠正了我什么？（feedback 类，最高优先级）
-4. 有没有反复出现的模式，值得编码成规则？
+4. 有没有反复出现的模式？
 
-**过滤标准——只有同时满足这三条才算"真经验"：**
+**三道筛——同时满足才算"真经验"：**
 
-- **可泛化**：去掉具体的文件名、变量名、项目名后，这条经验对同一 skill 的未来所有 session 仍然有用
-- **非重复**：skill 文档里还没有实质等价的规则
-- **经过验证**：这次 session 里确实验证了这条经验（不是猜测或"感觉应该这样"）
+- **可泛化**：去掉文件名、变量名、项目名后，对未来所有 session 仍有用
+- **非重复**：skill 文档（包括已有的 Learned Tactics）里没有实质等价的规则
+- **经过验证**：本 session 确实验证了（不是猜测）
 
 **硬性排除：**
-- 具体的工程细节（某个文件路径、某次 build 的错误信息、某个具体的 sorry）
-- 只适用于当前项目的特定知识（放 UNDERSTANDING.md 而不是 skill）
-- 重复已有规则（哪怕换了措辞）
+- 具体工程细节（文件路径、build 错误、某个 sorry）→ 属于 UNDERSTANDING.md
+- 只适用当前项目的知识 → 属于 UNDERSTANDING.md
+- 重复已有规则
 
 ### Step 3: 改进（Amend）
 
-如果 Step 2 产生了通过过滤的候选经验（**没有就不写，宁缺毋滥**），追加到 skill 文档末尾的 `## Learned Tactics (Self-Improvement)` section。
+如果有通过筛选的经验（**没有就不写，宁缺毋滥**），写入 skill 文档末尾的隔离区。
 
-**写入格式：**
+#### 写入位置：skill 文档末尾的隔离 section
+
+每个 skill 文档的最末尾有一个严格隔离的 section，**用明确的分隔线和标记与手写内容分开**：
+
 ```markdown
-## Learned Tactics (Self-Improvement)
-
-_This section is maintained by the self-improvement loop. Each entry was extracted
-from real session experience and passed the generalizability filter._
+# ═══════════════════════════════════════════════════════════════
+# LEARNED TACTICS (Self-Improvement) — 以下内容由 /self-improve 自动维护
+# 手写内容请写在此分隔线之上。此区域内的条目来自实战经验提炼。
+# ═══════════════════════════════════════════════════════════════
 
 ### [YYYY-MM-DD] 简短标题
 一两句话描述规则本身。
 **Why:** 触发这条经验的场景（泛化描述，不带具体工程细节）。
-**How to apply:** 什么时候/什么条件下应该想起这条规则。
+**How to apply:** 什么条件下应该想起这条规则。
 ```
 
-**写入纪律：**
-- 每次最多加 1-3 条。不是写日记，是提炼规则。
-- 新条目追加到 section 末尾，不改动已有条目（除非发现已有条目是错的——那就修正它）。
-- 如果 section 超过 30 条（~500 行），触发一次"压缩"：合并重叠的条目，删除被后来条目 supersede 的旧条目。
-- 写完后 `cd ~/repos/zinan-skills && git add skills/<name>.md && git commit -m "self-improve(<name>): <一句话>"` 落盘。
+**这个分隔线是硬边界：**
+- 分隔线以上 = 手写内容，/self-improve **绝不修改**
+- 分隔线以下 = 自动维护区，只有 /self-improve 写入
+- 手动想加规则？写在分隔线以上的正常 section 里
+
+#### 写入纪律
+
+- 每次最多 1-3 条
+- 新条目追加到 section 末尾
+- 已有条目只在发现是错的时候才修正
+- 超过 30 条（~500 行）→ 触发压缩：合并重叠、删除被 supersede 的旧条目
+- **写完必须 git commit 落盘**（见下方并发控制）
 
 ### 完成后
 
-在 Telegram 简短报告：
-- "温习了 /lean skill，没有新经验要加。"（大多数情况）
-- "温习了 /lean skill，新增 1 条经验：<标题>。"（有新增时）
+Telegram 简短报告：
+- "温习了 /lean skill，没有新经验要加。"
+- "温习了 /lean skill，新增 1 条：<标题>。"
+
+## 多 Session 并发控制
+
+**场景**：research 窗口和 dm 窗口同时在做 Lean 工作，cron 同时触发两个 session 的 `/self-improve lean`。
+
+**机制：flock 文件锁 + read-before-write**
+
+```
+写入流程（Step 3 内部）：
+1. 尝试获取锁：flock -n /tmp/self_improve_<skill>.lock
+   - 拿到锁 → 继续
+   - 拿不到 → 说明另一个 session 正在写，本次只做 Step 1+2（温习+总结），跳过写入
+     报告："温习了 /lean skill，另一个 session 正在写入，本次跳过改进。"
+
+2. 拿到锁后，重新读一遍 skill 文档的 Learned Tactics section（另一个 session 可能刚写过）
+   - 检查候选经验是否已被另一个 session 加过（去重）
+   - 过滤掉已存在的
+
+3. 追加新条目
+
+4. git add + git commit（在锁内完成）
+
+5. 释放锁
+```
+
+**实际的 flock 命令**：
+```bash
+exec 9>/tmp/self_improve_lean.lock
+if ! flock -n 9; then
+    echo "Another session is writing, skip amend"
+    exec 9>&-
+    # 只做温习，跳过写入
+else
+    # 写入 + commit
+    cd ~/repos/zinan-skills
+    # ... Edit the file ...
+    git add skills/lean.md
+    git commit -m "self-improve(lean): <title>"
+    flock -u 9
+    exec 9>&-
+fi
+```
+
+**为什么 flock 而不是更复杂的方案：**
+- 所有 session 在同一台 Mac mini 上，flock 足够
+- 锁粒度是 per-skill（`/tmp/self_improve_lean.lock`），不同 skill 互不阻塞
+- 拿不到锁 = 温习照做，改进下次再来（3 小时后又有机会）
 
 ## Cron 配置
 
-每 3 小时自动触发。cron 脚本检测哪个 tmux 窗口在跑哪个 skill（通过最近的 conversation 内容判断），然后注入触发消息。
-
 **Cron 脚本**：`~/.openclaw/workspace/scripts/self-improve-cron.sh`
+**Cron entry**：`0 */3 * * *`
 
-```bash
-#!/bin/bash
-# 每 3 小时检测活跃 session 并注入 self-improvement 触发
-# 由 crontab 调用
+cron 只写 marker 文件（`/tmp/self_improve_due_<window>`），不直接 send-keys。
+PostCompact hook 检测到 marker 后在 hook 输出里提示 agent 执行 `/self-improve`。
 
-SKILLS=("lean" "xhs" "poly" "hunt")
-WINDOWS=("research" "dm")
+marker 有 6 小时过期保护——如果一个 marker 超过 6 小时没被消费，下次 cron 刷新它（避免堆积）。
 
-for win in "${WINDOWS[@]}"; do
-    # 检测窗口是否活跃（最近 10 分钟有输出）
-    if ! tmux has-session -t "zinan" 2>/dev/null; then continue; fi
-    
-    # 注入温习提示（不用 send-keys 直接发命令，而是通过 Telegram 发消息触发）
-    # 这样不会打断正在编辑的命令
-    # 具体实现：写一个 marker 文件，PostCompact hook 或下次 user prompt 时检测到
-    touch "/tmp/self_improve_due_${win}"
-done
+## 初始化
+
+第一次对某个 skill 执行 `/self-improve` 时，如果文档末尾还没有隔离 section，自动添加：
+
+```markdown
+
+# ═══════════════════════════════════════════════════════════════
+# LEARNED TACTICS (Self-Improvement) — 以下内容由 /self-improve 自动维护
+# 手写内容请写在此分隔线之上。此区域内的条目来自实战经验提炼。
+# ═══════════════════════════════════════════════════════════════
+
 ```
 
-**替代触发方式（更轻量）：**
-- **PostCompact hook 增强**：context 压缩时检查 `/tmp/self_improve_due_*`，如果存在就在 hook 输出中提醒"该温习 skill 了"
-- **UserPromptSubmit hook**：检测 session 时长，超过 3 小时自动建议温习
-
-## 与现有系统的关系
+## 与现有系统的边界
 
 | 系统 | 作用域 | 频率 | 写入目标 |
 |------|--------|------|----------|
@@ -115,47 +167,29 @@ done
 | **self-improve** | **单个 skill** | **每 3 小时** | **skill 文档 § Learned Tactics** |
 | UNDERSTANDING.md | 单个项目 | session 边界 | 项目根目录 |
 
-**不重叠原则：**
-- 只适用于某个 skill 的 → self-improve 写到 skill doc
-- 跨 skill 通用的 → lessons/ 系统
-- 项目特定的 → UNDERSTANDING.md
-- 关于紫楠人格的 → growth.md / reflections
-
-## 初始化一个 skill 的 Self-Improvement section
-
-对于还没有 `## Learned Tactics` section 的 skill，第一次 `/self-improve <name>` 时自动在文档末尾添加：
-
-```markdown
-
-## Learned Tactics (Self-Improvement)
-
-_This section is maintained by the self-improvement loop. Each entry was extracted
-from real session experience and passed the generalizability filter._
-
-```
+**不重叠**：skill 专属的 → self-improve；跨 skill 的 → lessons/；项目特定的 → UNDERSTANDING.md
 
 ## 示例
 
 **输入**：`/self-improve lean`
 
-**执行过程**：
-1. 读 `~/repos/zinan-skills/skills/lean.md`（255 行），刷新所有约束
-2. 回顾本 session：今天在 HolonomicCRN 项目推了 3 个 sorry，发现一个模式——每次忘记先 `grep sorry` 看全局状态就开始推某个 sorry，经常推到一半发现依赖另一个 sorry 的结果
-3. 过滤：这条可泛化吗？是的——"推 sorry 前先看依赖图"适用于所有 Lean 项目。重复吗？skill 里没有。验证了吗？今天确实因此浪费了一个小时。
-4. 写入：
+**执行**：
+1. 读 `~/repos/zinan-skills/skills/lean.md`，刷新约束
+2. 回顾：今天推 sorry 时忘记先看依赖图，浪费了时间
+3. 过滤通过（可泛化 ✓ 非重复 ✓ 验证 ✓）
+4. flock → re-read → 追加：
 
 ```markdown
 ### [2026-06-22] Resolve sorry dependency order before grinding
-Before attacking a sorry, check whether it depends on OTHER sorries' results
-(`grep sorry` + read the sorry's type to see what it assumes). Grinding a
-downstream sorry while its upstream is still open wastes the proof effort —
-the upstream resolution may change the type.
-**Why:** Repeatedly wasted ~1h proving things that became invalid when an
-upstream sorry was resolved differently.
-**How to apply:** At the start of any sorry-grinding session, build the
-dependency DAG first. Attack leaves (no sorry-dependencies) before interior
-nodes.
+Before attacking a sorry, check whether it depends on OTHER sorries' results.
+Grinding a downstream sorry while its upstream is still open wastes the proof
+effort — the upstream resolution may change the type.
+**Why:** Repeatedly proved things that became invalid when upstream sorry resolved differently.
+**How to apply:** At session start, `grep sorry` + build dependency DAG. Attack leaves first.
 ```
 
-5. Commit: `self-improve(lean): resolve sorry dependency order before grinding`
-6. TG 报告："温习了 /lean skill，新增 1 条经验：Resolve sorry dependency order before grinding。"
+5. `git commit -m "self-improve(lean): resolve sorry dependency order before grinding"`
+6. Release lock
+7. TG："温习了 /lean skill，新增 1 条：Resolve sorry dependency order before grinding。"
+
+$ARGUMENTS is the target skill name (required). Example: `lean`, `xhs`, `poly`.
