@@ -358,3 +358,28 @@ the same canonicalization `at that_hypothesis ⊢`, not just on the goal.
 instead of `x+y+2` after an overlapping rewrite set.
 **How to apply:** Any proof that simp-normalizes shifted indices before `ring`/`linear_combination`,
 especially when an index appears both as `t` and `t+1`.
+
+### [2026-06-22] Clear integer-division-by-a-constant before `ring`
+`ring`/`linear_combination` cannot reason about integer division (`Int.ediv`, e.g. `n*(n-1)/2`). For an
+exponent/polynomial identity whose terms contain division by a fixed literal `k` (with the dividend always
+divisible), prove `k * LHS = k * RHS` instead: rewrite each divided term via its banked doubled-form lemma
+(`k * (x/k) = x'`, e.g. a `2*f = fTwice` lemma) so the goal is division-free, close with `ring`, then recover
+the original by `mul_left_cancel₀ (by norm_num : (k:ℤ) ≠ 0)`.
+**Why:** A polynomial exponent identity a CAS confirmed exact still failed `ring` purely because its terms
+carried `/2` integer division.
+**How to apply:** Any `ring`/`linear_combination` goal containing `_ / k` (literal `k`) — scale by `k` to
+clear the division, prove the polynomial form, cancel the factor.
+
+### [2026-06-22] Build a faithful model to DISCOVER the proof mechanism, not just verify truth
+When a finite coefficient identity is numerically verified-true but resists assembly, mirror EVERY definition
+in an exact-arithmetic script and probe it for the proof STRUCTURE — test candidate slicings (per-index,
+telescoping, region/wall correspondences) and term-level index maps — rather than only re-confirming the
+total. An off-by-a-constant discrepancy in a naive index map is a clue, not a failure: the constant pins the
+CORRECT map (a sign or shift guessed wrong). The model exposes the actual bijection/cancellation the Lean
+proof must encode, and turns a diffuse "irreducible" wall into ring/omega-fact foundation lemmas + one
+structured core.
+**Why:** A long campaign stalled isolating "one more lemma"; probing a faithful model revealed the real
+mechanism, and an off-by-constant in the naive correspondence directly corrected the index shift.
+**How to apply:** Any hard finite identity where you don't yet see the proof's combinatorial mechanism —
+build the exact model, probe slicings + term maps, let the numbers (including constant offsets) dictate the
+correspondence before writing Lean. Pairs with the stop-and-audit discipline.
