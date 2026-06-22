@@ -253,3 +253,28 @@ Load the Lean 4 formalization playbook, project context, and the hard-won workin
 8. Report: "Playbook + tactics loaded. [N] sorry found. [If a CHECKLIST exists: k/N atoms ✅.] Ready for Lean work."
 
 $ARGUMENTS is an optional project path. If provided, cd there first.
+
+## Learned Tactics (Self-Improvement)
+
+<!--
+  此 section 由 /self-improve 自动维护，请勿手动编辑此区域内的内容。
+  - header 以上 = 手写正文，/self-improve 绝不修改；header 以下 = 自动维护区。
+  - 每条经验通过三道筛：可泛化、非重复、经过验证。超过 30 条触发压缩合并。
+-->
+
+### [2026-06-22] Your OWN "wiring vs hard theorem" verdict is a claim — TEST it, never assert it
+The adversarial-audit discipline (#7) targets the GRINDER's deliverables. It applies just as hard to the
+ORCHESTRATOR's own strategic judgments. When a residual is ambiguous between "just wiring of landed pieces"
+and "a genuine hard analytic theorem (Gronwall / circularity / multi-session)", do NOT assert either label —
+dispatch a subagent that ATTEMPTS the wiring with an explicit charge: "DECISIVE VERDICT: wiring, or
+estimate-blocked? Land it if wiring, name the precise lemma if not." Asserting the difficulty level instead
+of testing produces overclaims in BOTH directions: "it closes" (when it silently carries a hypothesis) AND
+over-correcting to "multi-session hard" (when a kernel/index trick makes it wiring).
+**Why:** This session I asserted "regularity closes" (false — the headline carried an uninstantiated
+`UniformBootstrapStep` field), then over-corrected to "genuine multi-session PDE theorem" (also false — a
+Duhamel kernel separation e^{−λ(t−τ)}=e^{−λt}e^{λτ} reduced ∂ₜ to plain FTC). Each was resolved only by a
+decisive attempt-the-wiring test, which both landed the bricks AND gave the true verdict.
+**How to apply:** Before committing/reporting any difficulty verdict on a residual you have NOT attempted —
+stop, spawn one decisive test that tries to close it and reports "wiring vs precise-residual". And read the
+headline theorem's CARRIED hypotheses before any "unconditional" claim — a conditional theorem builds green
+and is axiom-clean.
