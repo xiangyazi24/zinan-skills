@@ -44,9 +44,16 @@ user-invocable: true
 - **非重复**：skill 文档（包括已有的 Learned Tactics）里没有实质等价的规则
 - **经过验证**：本 session 确实验证了（不是猜测）
 
+**泛化测试（写入前必须过这一关）：**
+把写好的条目给一个不了解当前项目的人看——他能看懂吗？他能用到自己的项目里吗？
+如果他需要知道"EDS 是什么"、"Ward 是什么"、"这个 repo 的 Probability/ 目录"才能理解这条规则，
+那就是没泛化干净。**Why/How to apply 里可以用一个泛化的场景描述（"多项式恒等式验证"），
+但绝不能出现当前项目的专有名词、具体函数名、具体文件结构。**
+
 **硬性排除：**
 - 具体工程细节（文件路径、build 错误、某个 sorry）→ 属于 UNDERSTANDING.md
 - 只适用当前项目的知识 → 属于 UNDERSTANDING.md
+- 条目里出现当前项目的专有名词（EDS, Ward, Somos, preΨ, ClockBudgets 等）→ 没泛化干净，重写
 - 重复已有规则
 
 ### Step 3: 改进（Amend）
