@@ -123,16 +123,22 @@ user-invocable: true
 
 **场景**：research 窗口和 dm 窗口同时在做 Lean 工作，cron 同时触发两个 session 的 `/self-improve lean`。
 
-**机制：flock 文件锁 + read-before-write**
+**机制：原子 mkdir 锁 + read-before-write**
+
+注意：macOS 没有 `flock`。用 `mkdir` 作为原子锁（POSIX 保证 mkdir 是原子的）。
 
 ```
 写入流程（Step 3 内部）：
-1. 尝试获取锁：flock -n /tmp/self_improve_<skill>.lock
-   - 拿到锁 → 继续
-   - 拿不到 → 说明另一个 session 正在写，本次只做 Step 1+2（温习+总结），跳过写入
-     报告："温习了 /lean skill，另一个 session 正在写入，本次跳过改进。"
 
-2. 拿到锁后，重新读一遍 skill 文档的 Learned Tactics section（另一个 session 可能刚写过）
+LOCKDIR="/tmp/self_improve_<skill>.lock"
+
+1. 尝试获取锁：mkdir "$LOCKDIR" 2>/dev/null
+   - 成功（exit 0）→ 拿到锁，继续
+   - 失败 → 检查锁龄：如果锁目录 mtime > 30 分钟，判定为 stale（上个持有者被压缩中断），
+     rm -rf 回收后重试一次
+   - 仍然失败 → 另一个 session 正在写，只做温习，跳过写入
+
+2. 拿到锁后，重新读 skill 文档的 Learned Tactics section（另一个 session 可能刚写过）
    - 检查候选经验是否已被另一个 session 加过（去重）
    - 过滤掉已存在的
 
@@ -140,31 +146,41 @@ user-invocable: true
 
 4. git add + git commit（在锁内完成）
 
-5. 释放锁
+5. 释放锁：rm -rf "$LOCKDIR"
 ```
 
-**实际的 flock 命令**：
+**实际命令**：
 ```bash
-exec 9>/tmp/self_improve_lean.lock
-if ! flock -n 9; then
-    echo "Another session is writing, skip amend"
-    exec 9>&-
-    # 只做温习，跳过写入
-else
-    # 写入 + commit
+LOCKDIR="/tmp/self_improve_lean.lock"
+
+if mkdir "$LOCKDIR" 2>/dev/null; then
+    # 拿到锁，写入 + commit
     cd ~/repos/zinan-skills
     # ... Edit the file ...
     git add skills/lean.md
     git commit -m "self-improve(lean): <title>"
-    flock -u 9
-    exec 9>&-
+    rm -rf "$LOCKDIR"
+elif [ -d "$LOCKDIR" ]; then
+    # 检查是否 stale（>30 min）
+    lock_age=$(( $(date +%s) - $(stat -f %m "$LOCKDIR") ))
+    if [ "$lock_age" -gt 1800 ]; then
+        rm -rf "$LOCKDIR"
+        # 重试一次
+        if mkdir "$LOCKDIR" 2>/dev/null; then
+            # 写入 + commit ...
+            rm -rf "$LOCKDIR"
+        fi
+    else
+        echo "Another session is writing, skip amend"
+    fi
 fi
 ```
 
-**为什么 flock 而不是更复杂的方案：**
-- 所有 session 在同一台 Mac mini 上，flock 足够
-- 锁粒度是 per-skill（`/tmp/self_improve_lean.lock`），不同 skill 互不阻塞
-- 拿不到锁 = 温习照做，改进下次再来（3 小时后又有机会）
+**设计要点：**
+- macOS 没有 flock，mkdir 是 POSIX 原子操作，跨平台可靠
+- 锁粒度 per-skill（`/tmp/self_improve_lean.lock`），不同 skill 互不阻塞
+- 30 分钟 stale 回收：防止 session 被压缩中断后锁永远卡住（首次实战已验证）
+- 拿不到锁 = 温习照做，改进下次再来
 
 ## Cron 配置
 
