@@ -278,3 +278,36 @@ decisive attempt-the-wiring test, which both landed the bricks AND gave the true
 stop, spawn one decisive test that tries to close it and reports "wiring vs precise-residual". And read the
 headline theorem's CARRIED hypotheses before any "unconditional" claim — a conditional theorem builds green
 and is axiom-clean.
+
+### [2026-06-22] CAS-pre-certify every `linear_combination` cofactor on FREE symbols before writing Lean
+For a goal that an algebraic identity equals a linear combination of hypotheses (the EDS Ward gap-step
+needed 6-cofactor combinations + residual decompositions), compute the cofactors in a CAS (sympy) treating
+every sequence value / atom as an INDEPENDENT free symbol, and confirm `expand(goalLHS − goalRHS − Σ
+cofactorᵢ·(hypᵢLHS − hypᵢRHS)) == 0` EXACTLY before touching Lean. For an ideal-membership residual whose
+cofactors aren't obvious, `sympy.reduced(R, [rel₁,…], *vars, order='grevlex')` returns them (remainder must
+be 0). Then the Lean `linear_combination` is a mechanical transcription that closes first try — you never
+debug a wrong cofactor inside the slow remote-build loop. Critical companion step: Lean's `ring`/
+`linear_combination` treat `f (m+(k+1))` and `f (m+k+1)` as DIFFERENT atoms, so FIRST canonicalize every
+shifted index across all hypotheses AND the goal — `simp only [show m+(k+1)=m+k+1 by ring, show (m-1)+k+1=m+k
+by ring, …] at h₁ h₂ ⊢` — or the CAS-correct combination still fails on a residual that looks zero but isn't
+syntactically. Also rewrite literal sequence constants to ring elements (`normEDS 2 → b`) so atoms match.
+**Why:** Guessing cofactors and iterating inside the slow build loop (minutes/cycle, opaque `ring failed`
+messages) is the slow path; a CAS settles the algebra in seconds and hands you the EXACT cofactor + tells you
+the identity is even true before you invest in the encoding.
+**How to apply:** Any non-trivial `linear_combination` / polynomial-identity / `ring` goal over a
+function-of-index (EDS, P-recursive sequences, division polynomials, Somos/elliptic-net relations).
+
+### [2026-06-22] Multiplied-form first, cancel the factor separately (division-requiring inductions)
+When an inductive identity needs a division (cancel `D_n`, `b²·U_k(m)`, a leading coeff…), split it in two:
+(1) prove the UNCONDITIONAL multiplied identity `factor · (goal residual) = 0` by `linear_combination` — it
+holds over any `CommRing`, needs NO nonvanishing; (2) in a separate step cancel over a domain via
+`(mul_eq_zero.mp h).resolve_left hfac` then `linear_combination`. This decouples the always-true algebra from
+the nonvanishing obligation and quarantines "factor ≠ 0" to ONE place where you discharge it (e.g. `preΨ`
+degree lemmas in the division-polynomial setting). Watch for cancellation-factor ZEROS that are real edge
+cases, not just hypotheses: `b²·W(m+k)W(m-k)` vanishes at `m=±k` because `W(0)=0`, so those indices need a
+separate (often simpler, e.g. odd-recurrence) discharge — they are NOT covered by the generic nonvanishing.
+**Why:** Baking the cancellation into the main identity forces the nonvanishing hypothesis through the whole
+proof and makes the `linear_combination` unprovable over a general ring; splitting keeps the algebraic core
+ring-general and reusable, and surfaces the exact nonvanishing lemma + edge cases you still owe.
+**How to apply:** Any EDS/recurrence/division-polynomial induction whose step is a ratio identity (Ward
+conservation→InvarRel→gap-step were all built this way).
