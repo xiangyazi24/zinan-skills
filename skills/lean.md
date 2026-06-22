@@ -335,3 +335,26 @@ additively at the use-site so the chain's other (abstract) uses were untouched.
 chain's hypotheses it skips, satisfiability-audit each (find the producer/witness) BEFORE committing effort.
 A "Continuous (step/snap/threshold ∘ continuous-flow)" obligation is unsatisfiable wherever the flow crosses;
 realize the discontinuous object as a continuous polynomial. Pairs with §3.3 + §7 UNSATISFIABLE-FRONTIER.
+
+### [2026-06-22] `subst h` can eliminate the WRONG variable — use `rw [h]` when you need both names
+When `h : a = b` and BOTH sides are local variables, `subst h` removes one of them everywhere (often
+not the one you expect). If a lemma you call later still references the eliminated variable, you get
+"unknown identifier". When you only want to specialize the goal's occurrences and keep both variable
+names in scope for subsequent lemma applications, `rw [h]` on the goal instead of `subst h`.
+**Why:** A case-split equality branch followed by `subst` silently dropped a variable that the very next
+lemma application still needed, producing a confusing "unknown identifier" far from the real cause.
+**How to apply:** In case-split branches that handle an equality between two in-scope variables where you
+still apply lemmas mentioning both afterward — prefer `rw [h]` over `subst h`.
+
+### [2026-06-22] Overlapping rewrite lemmas misfire — state the goal already-canonical
+When normalizing function-argument indices for a `ring`-family closer via `simp only [show _ = _ by ring,
+…]`, if one rule's LHS is a SUBTERM of another's (e.g. `x+(y+1)` occurs inside `x+(y+1)+1`), simp rewrites
+the inner match first and the outer rule then never fires, leaving a non-canonical atom that breaks the
+closer even though the math is exact. Fix: write the lemma's GOAL with already-canonical arguments (don't
+ask simp to derive them) and apply the index rewrites only to the hypotheses; or remove the subterm
+overlap from the rewrite set. Sibling tip: library lemmas arrive with un-normalized arguments too — run
+the same canonicalization `at that_hypothesis ⊢`, not just on the goal.
+**Why:** A combination a CAS had confirmed exact still failed because one residual atom stayed `x+y+1+1`
+instead of `x+y+2` after an overlapping rewrite set.
+**How to apply:** Any proof that simp-normalizes shifted indices before `ring`/`linear_combination`,
+especially when an index appears both as `t` and `t+1`.
