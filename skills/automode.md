@@ -407,3 +407,21 @@ root/aggregate closure, so build them explicitly; (3) run the correctness/axiom 
 fully-qualified headline identifier, not an assumed name. A passing aggregate build is necessary, not
 sufficient. Complements the over-building entry: that guards producing too much, this guards claiming done
 on too little verification.
+
+### [2026-06-23] In a deep autonomous refactor, keep the TRUNK green at every commit — additive variants, or in-place only on a verified-dead sub-chain
+A long autonomous grind that rewrites a constant/interface threaded through many layers should never sit on
+one giant uncommitted multi-file change. Two trunk-green strategies: (a) build NEW additive variants of each
+layer (each compiles + commits green, trunk untouched) and flip the consumer to them only at the final step;
+or (b) edit a sub-chain IN PLACE only after grep-confirming it is DEAD w.r.t. the live target (no live caller
+transitively reaches it) — then in-place is clean and duplication-free. Commit each independently-verified
+layer the moment it's green. The payoff is durability: a multi-hour grind survives context exhaustion, a
+crash, or an interruption with zero lost work and a trunk that always builds.
+**Why:** A deep retarget (loosening a constant through ~8 layers across several files) was landed as a chain
+of small green-and-committed layers; when the intricate middle layers needed care, the already-committed
+green prefix meant nothing was ever at risk, and the in-place-vs-variant choice per layer was decided purely
+by "is this sub-chain reachable from the live headline?" (grep the transitive callers).
+**How to apply:** Before a multi-layer autonomous rewrite, decide per layer: additive variant (default, trunk
+stays green) vs in-place (only if the layer is verified dead for the live target). Commit each layer green;
+never accumulate a large uncommitted cross-file change. The final consumer-swap is the only step that flips
+live behavior. Distinct from "one commit per avenue": this is sub-layer granularity within ONE hard avenue,
+for crash/context safety.
