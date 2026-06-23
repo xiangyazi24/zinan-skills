@@ -265,9 +265,48 @@ right one per task.
 | **git-drop** (NEW) | Perfect (git commit) | ✅ yes | Code/proof artifacts — Lean files, LaTeX, scripts |
 | **github-write (legacy)** | Perfect | ❌ needs click | Only if git-drop isn't set up on a tab |
 
-### git-drop — the DEFAULT mode for all ChatGPT tasks (2026-06-18)
+### GPT job mode — the DEFAULT: ChatGPT reads the repo, you do NOT paste source (2026-06-23)
 
-ChatGPT's GitHub connector now asks for write permission ONCE per
+Every ChatGPT tab/channel runs as a **GPT job**: a GitHub repo is connected to it,
+and inside the job ChatGPT both **READs** that repo's source and **WRITEs** its answer
+back as a git commit (git-drop). Read + write together is the full job loop, fully
+unattended. **This is the default working mode** — use it instead of pasting source
+into the prompt.
+
+**The connector reads the repo's DEFAULT branch — there is NO branch picker.** ChatGPT's
+GitHub connector reads whatever GitHub has configured as the repo's *default* branch
+(usually `main`). You cannot say "read branch X" in the prompt and have the connector
+honor it. Consequence: **for ChatGPT to read your working source, that source must be on
+the connected repo's default branch.** Files that live only on a non-default working
+branch are INVISIBLE to the job (ChatGPT 404s on those paths).
+
+**Read-side workflow (do this BEFORE dispatching a code/proof task):**
+1. Ensure the files ChatGPT must read are on the connected repo's **default branch**.
+   Push them there — a normal `git push`, or per-file
+   `gh api repos/<owner>/<repo>/contents/<path> -X PUT -f message=... -f content=<base64> -f branch=<default-branch> [-f sha=<current>]`.
+   Keep the pushed copy CURRENT: if you edit a file locally, re-push before asking ChatGPT
+   to read the new version, or it reads a stale copy.
+2. In the prompt, reference files by **path + line range** (e.g. "read `scratch/Foo.lean`
+   L100-200 on the connected repo"), NOT by pasting their contents. Pasting large source
+   into the prompt is the anti-pattern to avoid (Xiang 2026-06-23: "不要这样来发请求") —
+   GPT-job mode exists precisely so you don't have to.
+3. ChatGPT reads the source itself, reasons, and writes its answer via git-drop (below).
+
+**404-on-a-path-that-exists ⇒ wrong branch, not missing file.** If ChatGPT reports it
+can't find a file you know is in the repo, the file is almost certainly on a NON-default
+branch (the job only sees the default). FIX: push that file to the default branch. Do NOT
+fall back to pasting source — that just hides the setup gap.
+
+**Stay generic — never hardcode a channel.** Each `<channel>` maps to its own connected
+repo + default branch + drop file; different sessions own different channels (research
+uses its set, cron/family/ac/dm each use theirs). Confirm a channel's
+repo / default-branch / drop-path ONCE (ask Xiang, or read it off a prior successful
+round), then drive that channel by path-reference. Write prompts and tooling so they take
+the channel/repo/branch as parameters — do not bake in any one session's channel names.
+
+### git-drop — the write half of GPT job mode (2026-06-18)
+
+ChatGPT's GitHub connector asks for write permission ONCE per
 session, then writes freely without per-file dialogs. This makes
 git-based answer delivery reliable and unattended.
 
