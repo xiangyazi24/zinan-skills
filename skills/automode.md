@@ -365,3 +365,18 @@ lack) is a real block. A piece you dispatched but could solve yourself is never 
 the backup didn't land; grind the primary (you). Distinguish dispatch-as-race (keep solving) from
 genuine-dependency (the result is an input you cannot independently produce). Sharpens "clean checkpoint =
 disguised idle": even when ALL remaining work IS the dispatched piece, if YOU can solve it you are not blocked.
+
+### [2026-06-23] Dispatch is a TWO-WAY audit — distrust the producer's verdict AND your own brief's framing
+In autonomous multi-agent driving, neither the producer's report nor your own brief is authoritative. A
+producer can OVER-claim (fake a discharge) OR UNDER-claim (declare a genuine wall that is actually a missing
+wiring step). And YOUR brief can over-claim what is tractable ("only the easy part remains"). Both directions,
+both parties, get checked against the actual structure before banking.
+**Why:** Both happened in one run: a producer stalled on an input it called "not derivable" that DID follow
+from a constraint already in scope (under-claim → re-dispatched with the derivation named → the next producer
+proved it); and a brief asserted a residual was fully tractable, but the producer correctly isolated extra
+genuine sub-residuals by reading the real structure. Trusting either at face value strands tractable work or
+re-introduces the overclaim the audit exists to catch.
+**How to apply:** On a STALL ("it's a wall / not derivable"), independently trace whether the missing input
+follows from in-scope hypotheses; if it does, re-dispatch with the precise derivation. On a DONE, signature-
+diff for a disguised conclusion. When a producer corrects YOUR brief's framing with genuine extra residuals,
+accept the corrected accounting — your brief is a hypothesis the producer tests, not a spec it must satisfy.
