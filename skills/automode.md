@@ -390,3 +390,20 @@ A dispatched agent that returns status "completed" has NOT necessarily produced 
 In a long autonomous run, if each verify iteration is expensive (a build/test/check that takes many minutes) AND you have multiple fixes to make on code layered over one slow-to-verify component, the highest-leverage move is to make the FEEDBACK LOOP cheaper — not to keep paying it per fix. Two restructurings: (a) STUB the expensive component the rest depends on (replace its body with a placeholder / known-good value) so you iterate the dependent layer in seconds, then restore the real one once the layer is green; (b) ISOLATE the expensive component into its own separately-cached unit so future edits elsewhere don't re-trigger it. Pausing to restructure pays back immediately across the batch of small fixes.
 **Why:** Re-running a many-minute build per fix-attempt to debug integration bugs is pure waste; stubbing the slow dependency dropped each iteration to seconds and isolating it made the slow cost one-time — several fixes landed in the span a single slow build would have taken.
 **How to apply:** Autonomous run + about to make several fixes on top of one slow-to-verify piece → stub it (to fast-iterate the layer) and/or split it into a cached unit FIRST. This is loop-efficiency, distinct from the no-idle / race-not-dependency reflexes: those keep you BUSY during a wait; this makes each step CHEAP so there's barely a wait.
+
+### [2026-06-23] A green TOP-LEVEL build does NOT prove the whole changed-impact set is green — verify done-claim completeness before reporting "全绿"
+When you drive to a "done / everything green" milestone unsupervised, the COMPLETENESS of that claim is
+your responsibility, and a single aggregate build target gives FALSE completeness: files that import your
+changed code but sit OUTSIDE that target's dependency closure are silently never compiled, so the aggregate
+"succeeds" while a real consumer is broken. Likewise the final correctness gate must target the ACTUAL
+top headline identifier — a near-namesake name passes an empty gate.
+**Why:** A top-level aggregate build passed and read as "whole library green", but the real headline
+consumers were not in the aggregate's import closure; building them explicitly surfaced a genuine break the
+aggregate never touched. Separately the first correctness gate silently used a wrong fully-qualified name
+and returned "unknown identifier" — nearly banking an empty check as a pass.
+**How to apply:** An autonomous "done / all-green" claim requires: (1) enumerate every transitive importer
+of each changed file; (2) confirm each is covered by a build that ACTUALLY ran — some live outside the
+root/aggregate closure, so build them explicitly; (3) run the correctness/axiom gate against the verified
+fully-qualified headline identifier, not an assumed name. A passing aggregate build is necessary, not
+sufficient. Complements the over-building entry: that guards producing too much, this guards claiming done
+on too little verification.
