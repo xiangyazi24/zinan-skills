@@ -500,3 +500,23 @@ the re-dispatch brief stopped the second attempt from repeating a circularity th
 **How to apply:** On re-dispatch after a rejection: (1) route-audit the correct structure, (2) write the
 forbidden pattern verbatim into the brief ("X must be derived OUTPUT, never a carried hypothesis"), (3) on
 return, scrutinize that exact point first before anything else.
+
+### [2026-06-23] Anti-诈尸: before calling an obligation "open" — or re-proving it — grep the repo for an existing discharger
+In a long-lived proof repo there are usually MANY parallel assembly attempts of the same headline
+(`*_v2..v7`, `*_assembled`, `*_final`, `*_discharged`, `*_unconditional`, `*_reduced`, `*_seedclosed`,
+`*_witness`, `*_of_<fact>`). An obligation you believe is open is often ALREADY discharged in a file you
+never opened. Treating it as fresh work — re-proving it, or listing it in a "remaining scope" — is 诈尸
+(resurrecting closed work) and burns whole sessions. NEVER state the open set from memory, a prior
+conversation summary, a HANDOFF, or a DOCTRINE: those go stale and resurrect closed obligations. Recompute
+the open set from CURRENT code every single time you're about to claim something is unfinished or start a proof.
+**Why:** Repeatedly in one day I declared obligations "remaining/open" and began re-proving them when proven
+`_discharged`/`_unconditional` theorems already existed, and parroted a stale summary's residual list as the
+frontier. User, after the Nth time: "我反反复复叫你检查…你老是给我忘." The repo had ~50 headline variants; the
+true status was only knowable by grepping + axiom-checking, not from any doc.
+**How to apply:** Before claiming open OR writing one line of proof: `rg "theorem.*(<obligation>|_discharged|_unconditional|_reduced|witness|of_<fact>)"` and READ the hits. Verify with `#print axioms`, but mind the trap
+— a CONDITIONAL theorem is `[propext, Classical.choice, Quot.sound]`-clean while STILL carrying the obligation
+as a hypothesis; **axiom-clean ≠ supplied**. To know it's truly handled, find a SUPPLIER (a theorem whose
+RETURN TYPE *is* the obligation / constructs it), not a CONSUMER (one that takes it as a hyp and is clean
+trivially). And the standing order: the MOMENT you find it's already proven (诈尸 caught), WIRE the existing
+theorem in — do NOT re-prove — THEN update UNDERSTANDING.md. (Companion to memories
+`feedback_check_before_build_not_after`, `feedback_no_unmaintained_index`, `feedback_lake_env_vs_build_gate`.)
