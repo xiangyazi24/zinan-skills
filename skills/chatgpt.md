@@ -626,3 +626,18 @@ data + status processing|completed = the answer is present or still streaming (p
 extract). Tiny data (question-only) + status pending = a genuinely stuck tab (surface to the user). This
 diagnostic separates "long answer in flight" from "dead tab" WITHOUT resubmitting — resubmitting would truncate
 a live one.
+
+### [2026-06-23] Smoke-test the delivery channel before fanning out a batch
+Before committing a multi-question campaign to an external collaborator's delivery
+mechanism (a file drop, a scraped capture, a callback), verify the FIRST answer
+actually lands end-to-end — a non-empty, retrievable result. A dispatched task that
+reports "completed" but yields an empty / zero-byte result is a BROKEN delivery
+channel, not a slow answer: stop dispatching into it, surface the breakage once, and
+switch to driving the work yourself. Firing more questions into a dead channel only
+multiplies lost-answer chasing.
+**Why:** A whole batch of dispatched questions silently failed to deliver (every task
+"completed" but with empty captures and unwritten drop files); continuing to fire wasted
+the channels, while the actual breakthrough came from own parallel investigation.
+**How to apply:** On the first dispatch of a batch, confirm the answer is retrievable
+before sending the rest. On a completed-but-empty result, treat the channel as down and
+go solo — do not re-dispatch into it.
