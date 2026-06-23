@@ -456,3 +456,21 @@ hundreds-of-terms expression.
 **How to apply:** When a `linear_combination`/`ring` encoding is large and its cofactors arrive separately
 (CAS, collaborator, a later round) — encode and compile a placeholder-cofactor version to lock the mechanism,
 auto-generate the Lean from the CAS, then substitute the final cofactors.
+
+### [2026-06-23] Unconditional `∀`-hypothesis with only an `_of_wf` discharge: try the subclass-unconditional route before declaring vacuity OR restructuring
+A carried `∀ a b, P a b` hypothesis can look "too strong / probably vacuous" when the repo only proves the
+underlying step-bound as `_of_wf` (needs full well-formedness). Before concluding the hypothesis is false, or
+rebuilding the consumer to thread well-formedness through it, check whether `P` is unconditionally true for
+STRUCTURAL reasons: the failure mode that forced `_of_wf` — typically a degenerate / error-track / saturation
+branch — often cannot fire for the sub-population `P` actually constrains, and a subclass-specific lemma
+(`_of_<role>` / `_of_<predicate>`) may already prove the needed brick UNCONDITIONALLY for that subclass.
+Prefer the subclass lemma over the general `_of_wf`.
+**Why:** Burned effort weighing "carried unconditional hyp is too strong (vacuity)" vs "restructure to thread
+well-formedness" — when the hyp was simply unconditionally TRUE: the well-formedness in the general lemma only
+served to rule out an error-jump that one structural class can never take, and subclass `…_le_succ_of_<role>`
+lemmas already existed proving the per-step bound with no well-formedness needed.
+**How to apply:** When a base bound you need unconditionally (or to discharge a carried `∀`-hyp) exists only
+as `_of_wf`, `rg` for a subclass variant (`_of_<role>`, `_of_<predicate>`) and check whether the `_of_wf`
+necessity is just an error/degenerate branch the relevant inputs avoid. This settles the unconditional-vs-vacuous
+fork with no restructuring. Complement of the de-axiomatization hypothesis-audit (that hunts UNSATISFIABLE
+carried hyps; this CONFIRMS a suspicious one is sound-unconditional).
