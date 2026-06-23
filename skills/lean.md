@@ -383,3 +383,44 @@ mechanism, and an off-by-constant in the naive correspondence directly corrected
 **How to apply:** Any hard finite identity where you don't yet see the proof's combinatorial mechanism —
 build the exact model, probe slicings + term maps, let the numbers (including constant offsets) dictate the
 correspondence before writing Lean. Pairs with the stop-and-audit discipline.
+
+### [2026-06-23] Trace the proof DAG for hidden circularity in "proven-modulo-X" reduction chains
+When a goal is reduced through several theorems each "proven modulo the next residual", verify the chain is
+not CIRCULAR before trusting "one sorry remains". Theorem A may be proved using B, and B (or a lemma it
+calls) back through A — so the genuine content is an undischarged sorry hidden in the cycle and the "single
+residual" is illusory (closing it would require itself). A docstring claiming "non-circular / breaks the
+circularity" is a CLAIM, not a fact: confirm it by reading the actual proof's dependency on the residual.
+**Why:** Several "discharge" theorems each cited the next; one's proof secretly routed back through the
+shared identity, so multiple "proven" results all rested on one undischarged core that the comments
+mislabeled as independently closed — wasted effort attacking the wrong (circular) form.
+**How to apply:** Before reporting "reduces to one sorry", trace each `proven-modulo-X` link down to a
+genuine base (axioms / proven leaves); if any citations form a cycle, the real residual is the cycle's true
+independent identity, and only a proof that avoids every member of the cycle counts. Pairs with
+verify-before-claim + `#print axioms`.
+
+### [2026-06-23] Map ALL existing whole-goal reductions before building a NEW route
+"Borrow the repo's library" applies at the ROUTE level, not just the lemma level. Before constructing a fresh
+reduction of a major goal, `rg` for every theorem that concludes or reduces that goal and inspect each one's
+open residual. A more-complete route often already exists that reduces the goal FURTHER than the new one you
+are about to build (which would then need extra glue to connect back), and its residual is usually the true
+single core. A redundant parallel route is wasted effort dressed as progress.
+**Why:** Spent a large effort building a fresh multi-variable reduction route to a goal, then found the repo
+already had a more-complete route reducing it to the very same single residual — the new route was redundant
+and additionally needed specialization wiring the existing route did not.
+**How to apply:** At the first thought of "I'll build a route to close X" — first `rg` the repo for theorems
+mentioning X and its known intermediate forms, list their sorry residuals, and adopt/extend the most-reduced
+existing route instead of starting a parallel one.
+
+### [2026-06-23] A cancellation/uniqueness engine on a SCALED difference needs the scale invariant under the engine's transport
+A "difference satisfies a homogeneous recurrence/operator ⇒ difference is 0" engine has a precondition: the
+difference must satisfy the EXACT operator. Before applying it to `D = A − c·B`, check that the factor `c` is
+INVARIANT under the operator's transport (if the operator shifts a variable, `c` must not depend on that
+variable). If `c` transforms with a nontrivial quasi-period, `c·B` does NOT satisfy the same operator as `B`,
+the engine does not apply, and the residual lemma "`c·B` satisfies the operator" you would state is FALSE —
+an unfillable sorry that still builds green.
+**Why:** Built a scaffold whose residual asserted a scaled object satisfied a homogeneous functional
+equation; the scale factor was variable-dependent with a quasi-period that twisted the equation, making the
+residual unprovable — caught only by computing the factor's transform under the step operator.
+**How to apply:** Before invoking any zero-from-homogeneous-FE / cancellation engine on `A − c·B`, compute
+how `c` transforms under the engine's step operator; apply only if `c` is invariant, else the scaled-FE
+residual is false. Pairs with §3.3 (vacuous/false residuals that pass mechanical-green).
