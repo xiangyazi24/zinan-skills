@@ -424,3 +424,35 @@ residual unprovable — caught only by computing the factor's transform under th
 **How to apply:** Before invoking any zero-from-homogeneous-FE / cancellation engine on `A − c·B`, compute
 how `c` transforms under the engine's step operator; apply only if `c` is invariant, else the scaled-FE
 residual is false. Pairs with §3.3 (vacuous/false residuals that pass mechanical-green).
+
+### [2026-06-23] Machine-extracted `linear_combination` cofactors must be INTEGER over a general ring
+A CAS Gröbner / ideal-membership lift over ℚ returns cofactors that may carry rational denominators —
+introduced whenever the reduction divides by a generator's leading coefficient (or eliminates a variable
+via a relation with a non-unit leading term). Such fractional cofactors are INVALID for `linear_combination`
+over a general `CommRing` (no division). Before transcribing, assert every coefficient is an integer; if not,
+either re-extract with a tracked Buchberger / monomial order that keeps the relevant leading coefficients
+units (often a single S-polynomial suffices to land an integer certificate), or multiply the whole identity
+by the lcm of denominators and carry an explicit `(d : R) ≠ 0` hypothesis — the latter only when the ring
+genuinely has that element invertible (e.g. a fixed prime in char-0 work).
+**Why:** A lex Gröbner lift produced cofactors with a constant denominator (from a generator whose leading
+coefficient was that constant); they verified the identity over ℚ but could not be encoded over a general
+ring. A different lift order yielded integer cofactors needing no extra hypothesis.
+**How to apply:** Any time you extract `linear_combination` cofactors from a CAS for a goal over a general
+commutative ring — check integrality first; prefer an integer-producing lift over clearing denominators with
+an invertibility hypothesis. Pairs with the CAS-verify-before-encode entry.
+
+### [2026-06-23] Validate a large `linear_combination` MECHANISM before the final cofactors land
+A big `linear_combination` proof carries two independent risks: (i) the surrounding mechanism — the `rw`
+expansions, the `norm := simp only [...]` lemma set, index canonicalization, and `ring1` actually handling
+a several-hundred-term certificate — and (ii) the exact cofactors. De-risk (i) FIRST with whatever verified
+cofactors you already have (even a scaled, non-final, or hypothesis-carrying set), proving a throwaway
+placeholder lemma; a clean compile proves the mechanism works at that term count, after which substituting
+the final cofactors is a trivial swap. For certificates of that size, auto-generate the cofactor expressions
+from the CAS objects (a small translator emitting Lean syntax) rather than hand-transcribing.
+**Why:** The cofactor mechanism (definition unfolds + `norm` simp expansion of compound constants + `ring1`
+over a large term count) was the real uncertainty; validating it once with a scaled placeholder set meant the
+final clean cofactors compiled on the first try, and the translator removed transcription error from a
+hundreds-of-terms expression.
+**How to apply:** When a `linear_combination`/`ring` encoding is large and its cofactors arrive separately
+(CAS, collaborator, a later round) — encode and compile a placeholder-cofactor version to lock the mechanism,
+auto-generate the Lean from the CAS, then substitute the final cofactors.
