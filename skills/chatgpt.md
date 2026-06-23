@@ -655,3 +655,17 @@ definitions is what actually confirmed (or would have caught a mismatch in) the 
 **How to apply:** Any machine-checkable artifact from a collaborator — extract just the result, drop their
 scaffolding, and verify it against inputs YOU defined. This sharpens "verify, don't transcribe": a passing
 self-test is the collaborator grading its own paper.
+
+### [2026-06-23] Pre-verify any factual premise / mechanism HINT you embed in a prompt — a false premise wastes the long-think
+When your question embeds a strategy hint, a claimed mechanism, or a factual premise ("use the X-pairing",
+"since A = B, reindex by ..."), numerically/independently verify that premise BEFORE dispatching. A false
+embedded premise is not harmlessly ignored — the collaborator builds a confident answer ON it (or burns a
+6–20 min long-think chasing it), and you then must detect the error and re-dispatch a correction, wasting both
+rounds. The bug is in YOUR prompt, not their reasoning.
+**Why:** A dispatched proof-strategy hint turned out numerically false (a pairing identity failed at a concrete
+test point); the channel ground on the false premise and the fix cost a full extra round — the error originated
+in the prompt I sent, not the answer I got back.
+**How to apply:** Before sending any prompt that asserts a mechanism/premise the collaborator should use, run a
+quick numerical or independent check on that assertion. "Verify, don't transcribe" applies to your OUTGOING
+hints too — don't poison the prompt with an unchecked claim. Pairs with the self-verifying-script entry: verify
+BOTH directions of the exchange.
