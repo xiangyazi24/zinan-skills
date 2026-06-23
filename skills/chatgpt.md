@@ -237,13 +237,19 @@ telling Xiang "this one failed" in chat is easy to lose (Xiang 06-17: "你这样
 (>500 B, no `[BRIDGE:` marker) · `✗ NEEDS-PASTE` · `↩ recovered`. Header carries the legend + a `<!-- next Q#: N -->`
 cursor.
 
-**Number every question.** Each dispatch gets a global `Q<N>` (read+bump the cursor) and the brief itself is
-**prefixed** `Q<N> (channel): …` so the number shows in the tab — that is how Xiang matches tab ↔ ledger.
+**This is now MECHANIZED in `ask-gpt.py` — do NOT do it by hand.** As of 2026-06-21 the script itself, on every
+call: assigns the global `Q<N>` (atomic locked read+bump of the cursor — fixes the duplicate-Q# collisions
+hand-maintenance produced), **auto-prefixes the brief** `Q<N> (channel): …` (so the number shows in the tab), writes
+the `⏳ dispatched` row, prints a Q#-led `═══ BRIDGE Q<N> →<ch> … ═══` banner to **stderr** (machine task-id demoted
+to a `↳ debug:` tail — never headline a raw `task`/bg-id to Xiang), and on return updates the row to
+`✅ captured`/`✗ NEEDS-PASTE` + fills `RUN#`. **Do not hand-number, do not hand-prefix the brief, do not hand-write
+ledger rows** — doing so double-prefixes (`Q12 (dm1): Q11 (dm1): …`) and re-introduces collisions. Pass an optional
+`ASK_LABEL="short topic"` env var if you want a better `topic` than the auto first-line summary.
 
-**Lifecycle:** (1) on dispatch append a `⏳` row + bump the cursor; (2) on harvest read the runs.log verdict (or
-compute: <500 B / `[BRIDGE:` ⇒ fail) and update to `✅`/`✗`, fill the `RUN#`; (3) on any `✗` do NOT silently
-re-fire (resubmitting truncates the in-flight tab answer) — surface the `Q<N>` row to Xiang once, he pastes from
-the tab; (4) on his paste mark `↩ recovered` (note where banked), then process verify-don't-transcribe.
+**What the caller still owns:** (1) relay the script's stderr banner / the answer to Xiang; (2) on a `✗ NEEDS-PASTE`
+row do NOT silently re-fire (resubmitting truncates the in-flight tab answer) — surface that `Q<N>` row to Xiang
+once, he pastes from the tab; (3) on his paste mark `↩ recovered` (note where banked), then process
+verify-don't-transcribe.
 
 Persists across sessions; highest `Q#` is the next to use. The ledger is the source of truth for "what's
 outstanding" — surface the `✗` rows when reporting a rolling-harvest round.
@@ -473,14 +479,17 @@ All three answer modes (fast / extended / Pro) auto-deliver — you just wait on
   (e.g. `cron`, `cron2`, `ac`, `ac2`, …) — if unsure, ask Xiang once; do not pattern-guess a
   `cron1` because `cron`/`cron2` exist.
 
-## After the answer arrives — run banner (mandatory)
+## After the answer arrives — run banner (now auto-emitted)
 
-Every `ask-gpt.py` run appends one line to `~/.chatgpt-bridge/runs.log`
-(run #, timestamp, channel, task id, bytes, provenance, verdict). The caller
-must surface that verdict **prominently in its own visible output** — the
-first line of the report, not buried in a file. Background pipes are silent;
-without the banner Xiang cannot tell whether a run succeeded or needs a
-manual paste. Format (success and failure both get a banner):
+As of 2026-06-21 **`ask-gpt.py` prints the banner itself, to stderr**, on every
+call — a `SUBMITTED` banner at dispatch and a result banner (`✅ COMPLETE` /
+`✗ TRUNCATED` / `✗ FAIL` / `✗ PENDING`) on return, both Q#-led, with the machine
+task-id demoted to a `↳ debug:` tail. It still also appends the machine line to
+`~/.chatgpt-bridge/runs.log`. The caller's job is no longer to *reconstruct* the
+banner from `runs.log` — it is to **relay** the stderr banner (and the answer) to
+Xiang. Do not headline a raw `task <id>` or a harness background-task id (e.g.
+`bdk47lczp`) to Xiang — those are machine tokens; lead with the `Q<N>` banner.
+The legacy hand-built format (kept for reference; the script's output supersedes it):
 
 ```text
 ═══ BRIDGE RUN #N ═══  <channel> | task <id8> | <bytes> B | ✅ COMPLETE
@@ -558,3 +567,33 @@ Xiang: 让 ChatGPT 给个 review score, 我们准备 submit 了.
   `processing` is normal for Pro/extended). Resubmitting truncates the answer.
 - Do not mass-reload tabs simultaneously (the real rate-limit trigger); tab
   count itself is fine.
+
+## Learned Tactics (Self-Improvement)
+
+<!--
+  此 section 由 /self-improve 自动维护，请勿手动编辑此区域内的内容。
+
+  规则：
+  - 此 section header 以上的所有内容是手写的 skill 正文，/self-improve 绝不修改。
+  - 此 section header 以下的所有内容由 /self-improve 从实战经验中提炼写入。
+  - 每条经验都通过了三道筛选：可泛化、非重复、经过验证。
+  - 如需手动添加规则，请写在此 section 之上的正文区域。
+  - 条目超过 30 条时 /self-improve 会自动压缩合并。
+
+  识别方式：grep "## Learned Tactics (Self-Improvement)" 定位此 section。
+-->
+
+### [2026-06-23] git-drop harvest: verify the drop file is FRESH (matches your Q#), not just non-empty
+When an answer arrives via a shared "drop" file (the channel writes its response into a fixed file you then
+fetch), a background-task "completed" + a NON-EMPTY drop file does NOT mean YOUR question's answer landed.
+If the write silently failed or is still pending, the file still holds the PREVIOUS round's answer — which
+reads like a successful capture and gets acted on as the new answer. Always verify the drop file's
+question-identifier (the Q#/topic header the channel echoes back) matches the question you dispatched THIS
+round, before trusting or integrating it.
+**Why:** A dispatched question returned "completed" and its drop file had full content — but it was a
+different, earlier question's answer (the new write never landed); only the question-id header in the file
+exposed the staleness. Acting on it would have integrated an off-topic answer.
+**How to apply:** On every shared-file / git-drop harvest, grep the fetched file's header for your dispatched
+question-id (and/or expected topic); if it doesn't match, treat as NOT-landed — surface it, don't act, and
+fall back to your own work. Pairs with the git-drop-monitoring + ASK-LEDGER discipline and "verify, don't
+transcribe."
