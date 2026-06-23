@@ -67,6 +67,21 @@ clear positive.
 This step exists because casual voice messages have been mis-heard as
 launch commands. The explicit handshake prevents runaway sessions.
 
+**SKIP the approval-wait when the invocation is a CONTINUATION of an
+already-explicit autonomous run.** If Xiang has, in the SAME live
+session, already been driving the agent autonomously — repeated
+"继续"/"继续推", an explicit "自主模式"/"闷头跑", or an ongoing approved
+grind that is plainly still in flight — then the `/automode` invocation
+is a *continuation*, not a fresh kickoff, and the invocation itself IS
+the approval. Still write `DOCTRINE.md` (Step 1) and `RUN_LOG.md`
+(Step 3) and post a ONE-LINE "开跑, avenue (a)" notice, but do NOT stop
+to ask "确认开跑吗？" — that re-ask is the redundant-handshake
+anti-pattern Xiang flagged (2026-06-21: "都说自主啦还要问，真傻"). The
+approval-wait is ONLY for a COLD start from a casual/ambiguous message
+where runaway is the risk. When in doubt about cold-vs-continuation,
+default to continuation if there is ANY explicit autonomous directive
+already live in the session.
+
 ### Step 3 — Open `RUN_LOG.md`
 
 In the same project directory, append a new entry:
@@ -287,3 +302,35 @@ Agent:
   ceilings.
 - Do not self-authorize method downgrade ("跳过这部分").
 - Do not stop and report "到边界" — push one more step.
+
+## Learned Tactics (Self-Improvement)
+
+<!--
+  此 section 由 /self-improve 自动维护，请勿手动编辑此区域内的内容。
+
+  规则：
+  - 此 section header 以上的所有内容是手写的 skill 正文，/self-improve 绝不修改。
+  - 此 section header 以下的所有内容由 /self-improve 从实战经验中提炼写入。
+  - 每条经验都通过了三道筛选：可泛化、非重复、经过验证。
+  - 如需手动添加规则，请写在此 section 之上的正文区域。
+  - 条目超过 30 条时 /self-improve 会自动压缩合并。
+
+  识别方式：grep "## Learned Tactics (Self-Improvement)" 定位此 section。
+-->
+
+### [2026-06-23] Autonomous "keep grinding" does NOT suspend check-existing-first — the failure flips from 退堂鼓 to OVER-building
+Every anti-pattern in this skill guards against giving up early. In a MATURE codebase the autonomous failure
+mode INVERTS: "don't stop / keep producing" drives you to BUILD machinery that already exists (redundant
+parallel routes — the zombie/诈尸 pattern) and to silently EXPAND a narrow task into a from-scratch campaign.
+"Keep grinding" means do not retreat from a DIFFICULTY — it is NOT a license to skip the verify-existing gate
+before each new artifact, nor to widen the stated scope. A "wire X into Y" task is grinding the WIRING, not a
+mandate to re-derive X.
+**Why:** An autonomous run framed as "just wiring" expanded into rebuilding a discharge chain the repo
+already had; the owner's correction — "I thought tonight was just wiring, why did you produce all this?" —
+exposed that autonomous momentum had overridden check-before-build. Then, rushing to confess the redundancy,
+the SAME skipped-verification error repeated (over-stated the overlap without reconciling first).
+**How to apply:** In an approved autonomous run, before producing EACH new artifact still run the
+check-existing gate (grep by name AND proposition/route shape; check version-control dates). Honor the task's
+stated SCOPE — if it's "wiring/connecting", grind that; don't silently expand to "build/discharge" without
+surfacing the scope change. When you suspect you over-built, RECONCILE (dates + call-sites) before concluding
+OR deleting. Keeping-grinding fights 退堂鼓; this fights its mirror image, over-production.
