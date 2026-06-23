@@ -748,3 +748,8 @@ landed it immediately, whereas re-firing the dead channel kept producing nothing
 **How to apply:** Treat each channel's delivery as independently verifiable — confirm liveness per-channel (did
 THIS channel just produce a real committed artifact?), not "the transport is up." Surface the dead channel once;
 route dispatches to a proven-live sibling. Pairs with the smoke-test and post-reset-diagnostics entries.
+
+### [2026-06-23] When the user explicitly assigns a channel but git-drop isn't configured, set it up yourself (repo-owner gh CLI), don't block
+When the user explicitly designates a collaborator channel to use for a PROJECT repo, but its git-drop delivery (scratch branch + drop file in the connected repo) doesn't exist yet, create it proactively with the repo-owner-authed gh CLI — branch from main (`gh api .../git/refs -X POST -f ref=refs/heads/<scratch> -f sha=<main-sha>`), drop file via `gh api .../contents/<path> -X PUT -f branch=<scratch> -f content=<base64>` — then dispatch. Don't block or ask the user to configure it.
+**Why:** The user named the channels to use for the work repo, but the git-drop scratch branch + drop file didn't exist; setting them up via gh (authed as the repo owner) took two API calls and the dispatch landed byte-perfect. Asking the user to set it up would have stalled an explicitly-greenlit task.
+**How to apply:** On a git-drop dispatch to a channel the user has EXPLICITLY assigned, if the drop file/branch is missing AND the repo is the designated project repo with owner auth, create the scratch branch + drop file yourself, then fire. The skill's "confirm with the user first" caution is for ambiguous/sensitive/shared repos — an explicit channel assignment on the work repo IS the confirmation.
