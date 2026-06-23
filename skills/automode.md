@@ -334,3 +334,18 @@ check-existing gate (grep by name AND proposition/route shape; check version-con
 stated SCOPE — if it's "wiring/connecting", grind that; don't silently expand to "build/discharge" without
 surfacing the scope change. When you suspect you over-built, RECONCILE (dates + call-sites) before concluding
 OR deleting. Keeping-grinding fights 退堂鼓; this fights its mirror image, over-production.
+
+### [2026-06-23] "Clean checkpoint — yielding to background" is a disguised idle while a dispatch is in flight
+In an autonomous run with a sub-task dispatched to a collaborator (a long-think still cooking), declaring
+"I've hit a clean milestone, yielding until it returns" is a soft-stop fingerprint whenever DEPENDENCY-FREE
+work remains. The dispatch being pending is not a license to wait — keep driving the artifacts that do NOT
+depend on the in-flight result: downstream wiring written against the dispatched piece's stated signature,
+adapter/bridge lemmas, verification harnesses, the next decomposed sub-piece. Genuinely yield only when EVERY
+remaining task is blocked on the dispatch.
+**Why:** Repeatedly announced "clean checkpoint, yielding to background" while a collaborator's long-think
+ran — and each time immediately found a concrete dependency-free next step (an adapter, a sibling computation
+done locally, the next sub-lemma). Every "yield" was premature; the run only truly stalled when all remaining
+work was blocked on the dispatch.
+**How to apply:** Before yielding to any pending dispatch, enumerate the remaining work and check whether ANY
+item is dependency-free; if one is, build it. "Yield and wait" is correct ONLY when all remaining tasks are
+blocked on the in-flight result. Pairs with "dispatch is parallelism, not a pause" and the no-idle reflex.
