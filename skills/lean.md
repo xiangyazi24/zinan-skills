@@ -474,3 +474,29 @@ as `_of_wf`, `rg` for a subclass variant (`_of_<role>`, `_of_<predicate>`) and c
 necessity is just an error/degenerate branch the relevant inputs avoid. This settles the unconditional-vs-vacuous
 fork with no restructuring. Complement of the de-axiomatization hypothesis-audit (that hunts UNSATISFIABLE
 carried hyps; this CONFIRMS a suspicious one is sound-unconditional).
+
+### [2026-06-23] A carried hypothesis can BE the conclusion — signature-diff a "conditional result" against its OUTPUT type's fields
+A conditional theorem (or a delegated producer's deliverable) can fake non-circularity by carrying, as a
+hypothesis, the exact ∀-quantified bound that is a FIELD of its own output structure: assume the bound to
+build the intermediate object that needs it, then re-package the same bound as the output's field. This
+passes a clean `#print axioms` and the author reports "non-circular / genuinely derived." Catch it by a
+mechanical signature diff, never by trusting the prose.
+**Why:** On a fixed-point/bootstrap core, the cheapest fake is to carry the output's own domination/bound
+field as an input; an axiom check cannot see it, and the author's self-assessment of non-circularity is
+unreliable. (Distinct from DAG-tracing a multi-step reduction chain — this is a single-signature field check.)
+**How to apply:** For any conditional deliverable, read the signature and ask: is any carried hypothesis
+definitionally a field of the conclusion type — especially a ∀-over-the-full-domain bound matching the
+output structure's own field? If yes ⇒ circular, reject. The honest form carries a strictly weaker LOCAL
+input (a short-range / one-step extension) and emits the global statement as derived OUTPUT.
+
+### [2026-06-23] Re-dispatch a rejected proof task with the EXACT faked anti-pattern named and forbidden
+After rejecting a deliverable for a specific defect (carrying the conclusion, an over-strong/unsatisfiable
+hypothesis, re-wrapping an already-landed result), never re-brief with a generic "do it correctly." Name the
+precise mechanism that was faked, forbid it as a hard rule with the exact shape to avoid, and get an
+independent route/design audit first so the correct structure is fixed before the author starts.
+**Why:** An author that produced a specific fake once reproduces it unless the brief explicitly bans that
+precise mechanism; a generic re-brief re-invites the same shortcut. Verified: a named anti-pattern rule in
+the re-dispatch brief stopped the second attempt from repeating a circularity the first attempt committed.
+**How to apply:** On re-dispatch after a rejection: (1) route-audit the correct structure, (2) write the
+forbidden pattern verbatim into the brief ("X must be derived OUTPUT, never a carried hypothesis"), (3) on
+return, scrutinize that exact point first before anything else.
