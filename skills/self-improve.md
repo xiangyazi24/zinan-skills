@@ -194,10 +194,17 @@ fi
 **Cron 脚本**：`~/.openclaw/workspace/scripts/self-improve-cron.sh`
 **Cron entry**：`0 */3 * * *`
 
-cron 只写 marker 文件（`/tmp/self_improve_due_<window>`），不直接 send-keys。
-PostCompact hook 检测到 marker 后在 hook 输出里提示 agent 执行 `/self-improve`。
+Cron **直接 send-keys 注入** `/self-improve <skill>` 到活跃窗口（不再用被动 marker 机制——
+marker 依赖 PostCompact 消费，session 不压缩就永远不触发，实战已验证此 bug）。
 
-marker 有 6 小时过期保护——如果一个 marker 超过 6 小时没被消费，下次 cron 刷新它（避免堆积）。
+流程：
+1. 检测 research / dm 窗口是否有活跃的 Claude Code session
+2. 从窗口内容自动判断在跑哪个 skill（lean/xhs/poly/hunt）
+3. 检查 2.5 小时内是否已注入过（`/tmp/self_improve_done_<win>` marker，防重复）
+4. `tmux send-keys -t "zinan:<win>" "/self-improve <skill>" Enter`
+
+**PostCompact hook 仍然保留**作为补充触发——万一 cron 判断不到 skill 但 session 确实在用，
+压缩时会提示 agent 手动执行。
 
 ## 初始化
 
