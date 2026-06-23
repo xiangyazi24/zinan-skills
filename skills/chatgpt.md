@@ -708,3 +708,8 @@ in the prompt I sent, not the answer I got back.
 quick numerical or independent check on that assertion. "Verify, don't transcribe" applies to your OUTGOING
 hints too — don't poison the prompt with an unchecked claim. Pairs with the self-verifying-script entry: verify
 BOTH directions of the exchange.
+
+### [2026-06-23] For one hard problem you doubt, split TACTICAL detail vs STRATEGIC route across two channels
+With two collaborator channels and ONE hard problem where you doubt your own approach, don't send two pieces of the same derivation (that splits a coherent question). Dedicate one channel to the TACTICAL question (does this specific lemma/bound/step close) and the other to the STRATEGIC question (is this the right approach at all — is the object I'm building even necessary, what is the canonical technique, is there a slicker route). The strategic answer can MOOT the tactical one (revealing the whole sub-structure is an artifact of your design), which a tactical-only consult never surfaces.
+**Why:** Driving a hard formalization crux, a tactical consult ("does the fixed-supersolution margin close for arbitrary data") was paired with a strategic one ("is the coordinatewise envelope even needed, or does the weaker norm bound suffice"); the strategic angle could reveal the entire tactical struggle is a self-inflicted design artifact, saving the tactical work entirely.
+**How to apply:** Two channels + one doubted approach ⇒ one tactical (HOW), one strategic (WHETHER / what's-canonical). Especially fire the strategic channel when your own framing has already been wrong — it audits the framing itself, not just the step. Distinct from parallelizing genuinely-independent sub-questions.
