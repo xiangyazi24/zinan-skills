@@ -568,3 +568,46 @@ a fresh verified file and re-pointing the proof there cleanly closed the produce
 **How to apply:** Before importing a module just to reuse one symbol, check the module's health (banked/built?
 siblings sound?). If not, re-home the symbol into a clean file. Pairs with killed-object hygiene: re-home the
 good, purge the bad.
+
+### [2026-06-23] nlinarith times out on a high-degree goal — `ring`-expand the power FIRST, then it's hint-linear
+When `nlinarith` hits a `(deterministic) timeout at whnf/isDefEq` (heartbeats) on a goal containing a
+power of a sum (`(1 + M/3)^3 ≥ c·M`, `(1+x)^k`), the cost is `nlinarith` internally expanding the
+polynomial. Pre-expand it yourself: `have hexp : (1 + M/3)^3 = 1 + M + M^2/3 + M^3/27 := by ring;
+rw [hexp] at h`, then feed `nlinarith` the monomial bounds you already have (`M^2 ≥ B`, `B·M ≤ M^3`) so
+the remaining goal is LINEAR in those hints. Separately, a genuinely long single proof (big calc + several
+nlinarith) can exceed the 200k default — wrap it with `set_option maxHeartbeats N in` (placed BEFORE the
+docstring, not between docstring and theorem).
+**Why:** A cubic-vs-linear inequality timed out repeatedly; expanding the cube with `ring` and supplying
+the `M^3 ≥ …` bound as a hint made `nlinarith` close instantly, and the whole long lemma needed a heartbeat
+bump to elaborate at all.
+**How to apply:** `nlinarith`/`polyrith` heartbeat-timeout on a goal with `(expr)^n` → `ring`-expand the
+power to monomials first and pass monomial-degree bounds as hints; reserve `maxHeartbeats` bumps for proofs
+that are simply long, not for masking a tactic that should be restructured.
+
+### [2026-06-23] A lemma that only PROPAGATES a bound should be parametric in the bound — generalize once, don't edit every layer
+When a constant (an exponent, an ε, a budget) is a pure pass-through threaded unchanged through a chain of
+propagation lemmas (a union bound `∑ ≤ n·max`, a monotone transport, a telescoping wrapper), do NOT
+in-place-edit or duplicate the constant at every layer to retarget it. Find the lemma whose proof merely
+COPIES the bound (it never uses the value) and generalize it to a parameter (`{B : …}`); then every caller
+passes whatever value it needs. One edit replaces a multi-layer constant-threading slog, and the lemma
+becomes reusable at all values.
+**Why:** Retargeting an exponent through a reset-overshoot chain, the bottom union-bound lemma hardcoded the
+specific value in its hypothesis AND conclusion but its proof only summed copies of it; abstracting it to a
+generic bound parameter let both the old and new values flow through with zero further edits.
+**How to apply:** Before editing a constant across N layers, check each layer's proof — any layer that
+doesn't USE the value (just carries it) should be parametric. Generalize that layer to a parameter rather
+than threading the new literal through all N. Pairs with "map existing routes" and the no-duplication reflex.
+
+### [2026-06-23] Push the slack to the stage that's actually hard — pick the intermediate constant that makes the resisting step TRIVIAL
+In a multi-stage estimate (numeric core → propagation → final fit) you often have freedom in an intermediate
+constant (a target exponent, a chosen rate). Different choices shift WHERE the difficulty lands. Identify the
+stage that genuinely resists automation (a `nlinarith` needing a sub-linear/log bound, a missing Mathlib
+lemma) and choose the constant that makes THAT stage trivial — even if it costs a slightly fancier bound in a
+stage that's already mechanical (e.g. a cube instead of a square absorption). Optimize for "no hard residual
+anywhere", not for the tightest single constant.
+**Why:** One target made the numeric core clean but forced the final fit into a hard log-of-n bound; bumping
+the target constant made the fit a one-line `nlinarith` at the cost of a marginally harder (but still
+mechanical) polynomial absorption upstream — net far less work and no fragile step.
+**How to apply:** When an intermediate constant is free and one downstream step won't close, recompute what
+constant would make that step trivial and propagate it, rather than grinding the hard step at the original
+constant. The binding constraint is "which step has no clean proof", not "which constant is tightest".
