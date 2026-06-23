@@ -349,3 +349,19 @@ work was blocked on the dispatch.
 **How to apply:** Before yielding to any pending dispatch, enumerate the remaining work and check whether ANY
 item is dependency-free; if one is, build it. "Yield and wait" is correct ONLY when all remaining tasks are
 blocked on the in-flight result. Pairs with "dispatch is parallelism, not a pause" and the no-idle reflex.
+
+### [2026-06-23] A dispatched hard piece is a RACE you also run, not a DEPENDENCY that blocks you
+When you dispatch a sub-task to a collaborator that YOU are also capable of solving, it is a parallel race —
+not a handoff. If that dispatch stalls, fails, or becomes unrecoverable (e.g. it needs a manual step you cannot
+trigger), it does NOT block you: you remain a live solver of that exact piece. Do not reclassify the dispatched
+piece as "blocked on them" and yield — keep grinding it yourself as the PRIMARY path; the dispatch is the
+backup, never the critical path.
+**Why:** A hard core lemma was dispatched to collaborator channels which then stalled with no recoverable
+answer; the tempting read was "the core is blocked on the stuck dispatch, yield" — but the dispatch was a
+redundant parallel attempt, so the core stayed fully solvable by self-grind. Treating one's own race entry as a
+blocking dependency would have idled the run on a non-dependency.
+**How to apply:** Only an EXTERNAL resource you cannot produce (a paid key, a human-only action on data you
+lack) is a real block. A piece you dispatched but could solve yourself is never a block — its stall just means
+the backup didn't land; grind the primary (you). Distinguish dispatch-as-race (keep solving) from
+genuine-dependency (the result is an input you cannot independently produce). Sharpens "clean checkpoint =
+disguised idle": even when ALL remaining work IS the dispatched piece, if YOU can solve it you are not blocked.
