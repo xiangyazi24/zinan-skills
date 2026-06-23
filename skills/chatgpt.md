@@ -634,7 +634,8 @@ actually lands end-to-end — a non-empty, retrievable result. A dispatched task
 reports "completed" but yields an empty / zero-byte result is a BROKEN delivery
 channel, not a slow answer: stop dispatching into it, surface the breakage once, and
 switch to driving the work yourself. Firing more questions into a dead channel only
-multiplies lost-answer chasing.
+multiplies wasted dispatches (the already-generated answers may still be
+recoverable from the tool's own task store — but stop fanning out first).
 **Why:** A whole batch of dispatched questions silently failed to deliver (every task
 "completed" but with empty captures and unwritten drop files); continuing to fire wasted
 the channels, while the actual breakthrough came from own parallel investigation.
