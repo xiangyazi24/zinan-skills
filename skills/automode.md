@@ -380,3 +380,8 @@ re-introduces the overclaim the audit exists to catch.
 follows from in-scope hypotheses; if it does, re-dispatch with the precise derivation. On a DONE, signature-
 diff for a disguised conclusion. When a producer corrects YOUR brief's framing with genuine extra residuals,
 accept the corrected accounting — your brief is a hypothesis the producer tests, not a spec it must satisfy.
+
+### [2026-06-23] A "completed" background producer can be an API-error death, not a deliverable — read the result, re-dispatch transient errors
+A dispatched agent that returns status "completed" has NOT necessarily produced anything: it may have died on a transient API / rate-limit / network error (server-side throttling, not your usage quota) after many tool calls. Banking that as a STALL, a PARTIAL, or "the producer couldn't close it" mis-attributes an infrastructure failure to the problem's difficulty. It is not a mathematical or structural outcome.
+**Why:** A long-running producer returned "completed" but its result body was a server-side rate-limit error with zero deliverable; treating it as "couldn't be done" would have falsely downgraded the task's tractability.
+**How to apply:** On EVERY background-producer completion, read the result body before auditing. A transient API/rate-limit/network error ⇒ the work is UNATTEMPTED ⇒ re-dispatch (after a brief wait), do not fold it into your difficulty assessment. Only a substantive DONE/PARTIAL/STALL with actual reasoning is a real outcome to two-way-audit. (When an independent consult has meanwhile corrected your route, re-dispatch with the corrected brief, not the original.)
