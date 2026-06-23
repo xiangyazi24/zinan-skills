@@ -598,21 +598,6 @@ question-id (and/or expected topic); if it doesn't match, treat as NOT-landed �
 fall back to your own work. Pairs with the git-drop-monitoring + ASK-LEDGER discipline and "verify, don't
 transcribe."
 
-## Learned Tactics (Self-Improvement)
-
-<!--
-  此 section 由 /self-improve 自动维护，请勿手动编辑此区域内的内容。
-
-  规则：
-  - 此 section header 以上的所有内容是手写的 skill 正文，/self-improve 绝不修改。
-  - 此 section header 以下的所有内容由 /self-improve 从实战经验中提炼写入。
-  - 每条经验都通过了三道筛选：可泛化、非重复、经过验证。
-  - 如需手动添加规则，请写在此 section 之上的正文区域。
-  - 条目超过 30 条时 /self-improve 会自动压缩合并。
-
-  识别方式：grep "## Learned Tactics (Self-Improvement)" 定位此 section。
--->
-
 ### [2026-06-23] Recover a deadline-exceeded long answer from the bridge task store — don't treat it as lost
 When a Pro/Extended long-think exceeds the bridge client's hard deadline (~45 min), the blocking call returns
 PENDING / an empty-or-truncated result — but the FULL answer keeps streaming into the bridge's own persistent
@@ -642,3 +627,31 @@ the channels, while the actual breakthrough came from own parallel investigation
 **How to apply:** On the first dispatch of a batch, confirm the answer is retrievable
 before sending the rest. On a completed-but-empty result, treat the channel as down and
 go solo — do not re-dispatch into it.
+
+### [2026-06-23] After a bridge reset, runs-log history lies — confirm channel liveness from the live registry, and re-fire stale dispatches
+A full bridge clear/restart WIPES the run history and recreates an empty task DB. Two consequences bite if you
+forget it happened: (1) the "this channel never succeeded in the run log ⇒ wrong channel name" heuristic gives
+FALSE positives — the history was erased, not the channel missing; confirm a channel is real/live from the
+bridge's LIVE registry (`/api/diag` registered-tabs), not from run-log history. (2) Any question dispatched
+just before/around the reset is DEAD — its task id no longer exists in the fresh DB, so the blocking call sits
+PENDING at 0 B forever. Kill those in-flight dispatches and re-fire fresh; since they never produced an answer,
+re-firing truncates nothing.
+**Why:** Post-reset, several dispatches sat 0 B / PENDING and the run log showed every channel "never OK",
+which read as wrong channel names — but the live registry showed all the tabs present and connected; the real
+cause was the dispatches had hit the pre-reset bridge. Kill + re-fire to the same names landed them.
+**How to apply:** If you (or the user) just cleared/restarted the bridge, distrust run-log-based channel
+diagnostics; check the live `/api/diag` registry for the tab, and kill+re-fire any dispatch that predates the
+reset. Pairs with the phantom-channel ("0 B never fills") and smoke-test entries.
+
+### [2026-06-23] A returned self-verifying script only proves consistency with the collaborator's OWN transcription
+When a collaborator (ChatGPT, a subagent) returns a self-contained script that asserts its own correctness
+(`assert … == 0; print OK`), that OK proves the result is consistent with THEIR transcription of your problem —
+NOT that it matches YOUR actual definitions. A silent mis-transcription of the prompt (a flipped sign, a
+dropped term, a wrong index) passes its own assert cleanly. Before trusting/integrating the artifact, re-run
+the check against your OWN independent re-encoding of the inputs (your definitions, not theirs).
+**Why:** A returned cofactor/identity script printed OK, but the OK only certified it against the script's
+own restatement of the problem; re-checking the same output against an independently-coded version of the
+definitions is what actually confirmed (or would have caught a mismatch in) the result.
+**How to apply:** Any machine-checkable artifact from a collaborator — extract just the result, drop their
+scaffolding, and verify it against inputs YOU defined. This sharpens "verify, don't transcribe": a passing
+self-test is the collaborator grading its own paper.
