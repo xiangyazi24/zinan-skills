@@ -718,3 +718,19 @@ With two collaborator channels and ONE hard problem where you doubt your own app
 In multi-round collaboration, if a LATER round (a refinement / re-ask) wedges past its deadline — the task store shows the PROMPT only (no answer text, regardless of byte size) plus a requeue / "junk" event — do not resubmit (re-wedges / truncates) and do not block on it. Check whether an EARLIER round of the same thread already delivered the substantive answer/design, and whether your own parallel verification covers the corrections the re-ask was targeting; if so, proceed on those and abandon the wedged round. The re-ask was an upgrade, not a prerequisite.
 **Why:** A re-dispatch wedged with no recoverable answer, but the prior round had already given the complete design and own analysis covered the very correction the re-ask targeted — so blocking on or resubmitting the wedge would have cost time for a result already in hand.
 **How to apply:** A re-ask round hangs/wedges (question-only store + requeue event) → mine the prior round's answer + your own work; only re-dispatch fresh-and-short, or surface to the user, if nothing already covers the need. This is the no-answer-to-recover branch that complements the "recover a still-streaming deadline-exceeded answer" lesson.
+
+### [2026-06-23] Verify a DESIGN/architecture answer against an independent STRUCTURAL signal in the code — not the collaborator's prose
+"Verify, don't transcribe" is easy for a math identity (re-run a numerical check), but a DESIGN
+recommendation (gate this predicate to a sub-band, restructure that interface, split here) has no number
+to check. The verification is structural: find an INDEPENDENT place in the codebase that the proposed
+design implies a constraint on, and confirm the code already behaves that way. If a separate, pre-existing
+component already makes the exact distinction the design relies on, that independent corroboration is far
+stronger evidence the design is faithful than the collaborator's argument for it.
+**Why:** A collaborator proposed gating a uniform obligation to a sub-band of cases; the decisive
+confirmation was not its explanation but discovering that a downstream producer — written earlier and
+independently — ALREADY case-split on exactly that sub-band and ignored the obligation outside it. That
+independent structural witness confirmed the gate matches the real dependency, which no amount of prose could.
+**How to apply:** When a collaborator returns an architecture/design change you cannot numerically check,
+before adopting it locate an independent component that the design constrains and confirm the code already
+satisfies it. Absence of such corroboration — or a component that contradicts the design — is a red flag to
+push back, not adopt. Extends "verify, don't transcribe" to the design/architecture case.
