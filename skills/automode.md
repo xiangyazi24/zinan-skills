@@ -425,3 +425,8 @@ stays green) vs in-place (only if the layer is verified dead for the live target
 never accumulate a large uncommitted cross-file change. The final consumer-swap is the only step that flips
 live behavior. Distinct from "one commit per avenue": this is sub-layer granularity within ONE hard avenue,
 for crash/context safety.
+
+### [2026-06-23] De-risk a large mechanical refactor: calibrate the transform on ONE unit, then batch
+When a delegated task expands into applying the SAME mechanical transform across many files/sites (a migration, a mass rename, an API threading), do not script-and-apply it blind across everything at once — calibrate on ONE representative unit first: apply the transform, build/verify it, and let the errors reveal the FULL recipe (each fix exposes another rule the transform must encode). Only once one unit is green do you batch the (now-complete) transform across the rest, building bottom-up with the single expensive-to-verify node isolated in the background so the cheap-unit debugging isn't serialized behind it.
+**Why:** A whole-subsystem migration applied blind produced a pile of simultaneous errors across many files that were impossible to localize; migrating ONE file instead surfaced the migration rules one at a time (each error = one more rule), and only after that file went green did batching the complete recipe across the rest converge quickly.
+**How to apply:** Delegated "just do X" reveals X = the same edit times N → calibrate the edit on one unit to completion (build-guided), encode the full recipe, THEN batch + build bottom-up; park the slowest node's build in the background. Keep driving (the delegation is standing authorization); recalibrating scope mid-run is not re-gating.
