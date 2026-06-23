@@ -555,3 +555,16 @@ When you add a single uniform `∀ i, (work i).Post c → <strong fact about c>`
 When a formalization's hardest seam is a BASE invariant (the object a bootstrap/ladder starts from), check whether it is strictly STRONGER than the headline theorem actually requires. A uniform-over-a-parameter COORDINATEWISE bound (sup over t of each mode/component, demanded to lie in a summable/Sobolev sequence space) is strictly stronger than the corresponding NORM bound (sup over t of the norm), because sup-of-sum ≠ sum-of-sup — a trajectory can stay in a bounded ball while visiting different components at different parameter values, so the coordinatewise sup can fail to lie in the space at all. Proving the stronger object manufactures hard seams the theorem never needed (and a per-component ladder then multiplies them).
 **Why:** A whole architecture (a coordinatewise envelope + a per-component regularity ladder) ground for dozens of producer-rounds on a base seam that an independent strong-reasoner identified as strictly stronger than the needed uniform NORM bound; rebuilding on the standard norm/energy route — which proves exactly the headline object — converged far faster and was more faithful to the source paper. The norm route then needed only a PER-SLICE (fixed-parameter) regularity, not the uniform-sup envelope, and that per-slice fact was already landed.
 **How to apply:** Before grinding a hard base invariant, ask "is this strictly stronger than the headline?" — especially any sup-over-a-parameter of a pointwise/per-mode quantity (vs the sup of the norm). If stronger, switch the main route to the norm/integral object and keep the coordinatewise/pointwise object as optional one-shot post-processing, never the base. Complements the unsatisfiable-hyp/over-engineered-model entry (that catches FALSE carries; this catches over-STRONG-but-true ones).
+
+### [2026-06-23] Re-home a needed def/lemma OUT of an un-banked or discredited module — don't import the bad file for it
+When the symbol you need lives in a module that is un-banked, vacuous, or otherwise discredited (its other
+contents are unsatisfiable/wrong, or its compiled artifact was never produced), do NOT `import` that module to
+reuse the one good piece — importing drags in the vacuity/staleness, and a missing build artifact hard-breaks
+you. COPY the needed definition into a clean, verified file and make THAT the canonical home; downstream imports
+the clean file.
+**Why:** A needed structure definition lived in an un-banked scaffolding module whose siblings were a known-
+vacuous residual; importing it failed (no olean) and would have re-introduced the vacuity. Copying the def into
+a fresh verified file and re-pointing the proof there cleanly closed the producer (and let the bad module die).
+**How to apply:** Before importing a module just to reuse one symbol, check the module's health (banked/built?
+siblings sound?). If not, re-home the symbol into a clean file. Pairs with killed-object hygiene: re-home the
+good, purge the bad.
