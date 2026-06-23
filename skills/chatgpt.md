@@ -734,3 +734,17 @@ independent structural witness confirmed the gate matches the real dependency, w
 before adopting it locate an independent component that the design constrains and confirm the code already
 satisfies it. Absence of such corroboration — or a component that contradicts the design — is a red flag to
 push back, not adopt. Extends "verify, don't transcribe" to the design/architecture case.
+
+### [2026-06-23] A GLOBAL transport repair does not restore ALL channels — delivery is per-channel; verify each, route to a confirmed-working sibling
+After a global fix to a multi-channel collaborator transport (bridge restart, connector re-auth), do NOT assume
+every channel recovered. Delivery health is PER-CHANNEL (per-tab config/state): one channel can commit answers
+cleanly while a sibling still silently drops every answer for the same kind of task. When a channel stays dead
+post-fix, stop firing it and RE-ROUTE the same self-contained question to a channel you have SEEN deliver this
+session — don't wait on the dead one or declare the work blocked (a self-contained task doesn't care which tab
+answers).
+**Why:** After the transport was globally repaired, one channel resumed committing answers reliably while a
+sibling produced nothing (empty drops, no commits) for the same task class; re-routing to the working channel
+landed it immediately, whereas re-firing the dead channel kept producing nothing.
+**How to apply:** Treat each channel's delivery as independently verifiable — confirm liveness per-channel (did
+THIS channel just produce a real committed artifact?), not "the transport is up." Surface the dead channel once;
+route dispatches to a proven-live sibling. Pairs with the smoke-test and post-reset-diagnostics entries.
