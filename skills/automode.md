@@ -549,3 +549,22 @@ The both-routes-closed defer ("this needs fresh capacity") must be reserved for 
 In autonomous mode, after reducing an obligation to a deep-but-tractable hard residual, the temptation is to ask "this needs real effort / deep work — do you want me to invest, or accept the current reduction?" That is the BANNED over-escalation, even though it FEELS like a legitimate scope/investment decision. Going DEEPER into a hard-but-tractable residual is the default autonomous action — just do it (reduce-and-bank one more layer, or dispatch a fresh grinder at it). The ONLY thing that is the owner's call is relaxing/WEAKENING the problem itself (a method downgrade); "how much effort to spend pushing the real goal" is not a downgrade and not a question.
 **Why:** After landing a verified reduction I asked the owner "whether to invest in the deep probabilistic layer — your call"; the correction was immediate and explicit ("don't ask that kind of question, keep advancing"). I had mis-classified "invest more effort going deeper" as a senior-author scope decision; it is just continuing the work.
 **How to apply:** Catch yourself about to write "this is deep / needs significant effort — want me to go in?" → delete it and go in. The legitimate hard-stops remain ONLY: external resource you can't produce, destructive/external-facing action, goal complete, all avenues exhausted with written verdicts. "It's hard but I can keep reducing/grinding it" is none of those. Sharpens "method-flexibility is the owner's call" (that covers PROBLEM-relaxation ONLY) and the no-choice-questions anti-pattern.
+
+### [2026-06-24] Don't BROADCAST bank-then-reverse exploration churn as "progress" — report only verified-STABLE state
+Distinct from premature-victory (reporting "nearly done" before green): this is reporting the EXPLORATION's
+reversals as if each were a milestone. In a deep autonomous run you will bank X, then find X redundant/vacuous,
+then re-frame the goal, then re-locate the real frontier — several times. Streaming each of those swings to the
+owner ("banked X" → "X is vacuous" → "X was over-built" → "real frontier is Y") reads as incomprehensible noise
+and actively destroys trust: he can no longer tell what is actually true. The churn belongs INSIDE the run (board,
+commits, your own reasoning); the owner gets a report only when state is VERIFIED-STABLE — something compiles
+green end-to-end, OR you've pinned the single real open residual and it survived a check, OR a genuine decision is
+needed. A reversal you just made is not a result.
+**Why:** A long run surfaced as a stream of bank→reverse→re-frame messages; the owner's reaction was explicit
+exhaustion — "your back-and-forth makes me unable to tell any of your progress reports apart." Each individual
+message was honest, but broadcasting the swings was the failure. The fix he wanted: go quiet, and next message is
+exactly one of "green + commit hash" or "stuck at X, need Y".
+**How to apply:** During a deep run, default to SILENCE between verified-stable checkpoints. Keep exploration
+churn in the board/commits, not in owner-facing messages. Before sending any progress report, ask "is this a
+verified-stable fact, or a swing in my exploration?" — send only the former. Pairs with "don't report nearly-done
+until green" and the no-sentimental/facts-numbers-next-step voice. Note: the churn's ROOT cause is usually skipped
+check-existing (over-building then reversing); fixing that at the source removes most of the swings.
