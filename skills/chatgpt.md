@@ -120,9 +120,28 @@ EOQ
 ```
 
 - `<channel>` names an open ChatGPT tab; each channel/tab has a **GitHub repo
-  connected**, so ChatGPT can read that repo's code when answering. Ask Xiang
-  which channels are live and what repo each is bound to (e.g. `ac` →
-  AnalyticCombinatorics, `dm` → Bounded).
+  connected**, so ChatGPT can read that repo's code when answering.
+
+### Channel 命名规则与窗口隔离（严格执行）
+
+**Channel 名以你所在的 tmux 窗口名为前缀。不要用串。**
+
+每次调用 `ask-gpt.py` 前，必须确认两件事：
+
+1. **确认自己的窗口名**：`tmux display-message -p -t "$TMUX_PANE" '#W'`
+2. **只用自己窗口前缀的 channel**：
+   - dm 窗口 → 用 `dm`, `dm1`, `dm2`, `dm3`, `dm4`
+   - research 窗口 → 用 `research`, `research1`, `research2`
+   - family 窗口 → 用 `family1`, `family2`, `family3`
+   - cron 窗口 → 用 `cron1`, `cron2`
+   - pbook 窗口 → 用 `pbook1`, `pbook2`
+   - chan-work 窗口 → 用 `chan1`, `chan2`
+
+3. **查看当前可用 channel**：`curl -s http://localhost:8801/api/channels | python3 -m json.tool`
+
+**禁止跨窗口用 channel**——dm 窗口不能用 cron1，pbook 窗口不能用 dm2。
+LLM 跑久了会忘记自己在哪个窗口、该用哪个 channel，开始串台。
+**每次调用前检查，不要靠记忆。**
 - It **blocks until the answer is ready** and prints it. Answers can take from
   seconds (fast mode) to **10-20 minutes** (Pro/Extended long-think) — that is
   NORMAL. **Never resubmit or reset a pending question** — that interrupts the
