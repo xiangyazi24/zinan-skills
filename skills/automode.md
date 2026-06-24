@@ -435,3 +435,22 @@ When a delegated task expands into applying the SAME mechanical transform across
 In a long autonomous run, an axiom-clean architecture can be wired end-to-end yet keep grinding for many rounds on a base seam — and an independent strong-reasoner audit may reveal it is proving a STRONGER object than the goal needs (so the seam is self-inflicted). Switching the main route to the simpler/faithful architecture is the right move: it is an ENGINEERING decision (both routes prove the same theorem), so it is YOUR call to make and drive — NOT a method-downgrade to escalate, and NOT 退堂鼓 (you are not abandoning the GOAL, you are choosing a better path to it). The sunk cost of the wired old architecture is not a reason to keep grinding its seams.
 **Why:** A coordinatewise/ladder architecture ground for dozens of rounds on a base invariant an independent reasoner identified as strictly stronger than the needed norm bound; pivoting to the standard norm/energy route converged in a handful of producers, reusing the shared lower-level lemmas. Continuing the old route out of sunk cost would have wasted far more.
 **How to apply:** When a wired architecture stalls repeatedly on one base seam, get an independent design audit; if it says the object is over-built / there's a simpler faithful route, PIVOT and drive it yourself (report the decision, don't ask permission — it's engineering). Reuse the shared sub-lemmas (the old work isn't all wasted). This is the constructive complement to the no-退堂鼓 rules: those forbid quitting the goal; this permits — encourages — switching the method to a better one.
+
+### [2026-06-23] When autonomous AND your own context is exhausted on a deep grind: shift from GRINDER to ORCHESTRATOR — don't stop, don't grind exhausted
+The genuine tension in a very long autonomous run: the user forbids stopping/asking ("自主执行, keep going"),
+but your own context is exhausted and the remaining work is deep new proofs/derivations where an exhausted
+context produces errors + wasted slow-build cycles. The resolution is NOT to stop (banned) and NOT to grind
+deep new work yourself (high error-rate). It is to CHANGE ROLE: dispatch the deep generation to a
+fresh-context collaborator (an LLM with repo access writing to a committed artifact), and become the
+verify → fix → wire → commit orchestrator. You stay productive and honest (verify-don't-transcribe catches
+the collaborator's errors), the trunk stays green, and progress keeps landing — without you fabricating a
+deep proof from an exhausted state. "No stopping" means keep PROGRESS flowing, not keep GRINDING personally.
+**Why:** Late in a marathon autonomous session the user repeatedly said "keep proving / don't ask"; my own
+context was too large to soundly write deep new proofs. Dispatching the generation to a repo-connected LLM
+(structure-first, then focused leaf-closing rounds) and acting as the verify+commit orchestrator kept
+committing green progress, whereas grinding it myself would have produced errors and whereas stopping would
+have violated the directive.
+**How to apply:** Autonomous run + own context exhausted + remaining work is deep generation → become the
+orchestrator: dispatch generation to a fresh-context tool, then verify/fix/wire/commit its output. Reserve
+your own cycles for the judgment the collaborator can't do (verification, error-catching, integration,
+honest accounting). This is the legitimate form of "keep going" when you personally can't grind well.
