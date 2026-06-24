@@ -474,3 +474,18 @@ The orchestrator move (dispatch the deep piece, verify/wire) assumes the collabo
 The mirror-image of the "到边界/giving-up" fingerprint is OVER-optimism. In a deep dependency tree, each apparent "last brick" tends to expand into another layer or reveal a hidden keystone (a missing producer, a bigger-than-counted interface, an unsatisfiable atom). Repeatedly announcing "one piece from done" / "almost unconditional" during the run — before the headline compiles green end-to-end — erodes trust and forces public self-correction when the next layer surfaces. The banned-anti-pattern list forbids the despair framing; this forbids its opposite, premature-victory framing.
 **Why:** In one long assembly I announced "one brick from the result" several times; each was followed by a deeper discovery — the carried interface was ~2× the counted size, a residual flagged as a hard wall turned out artifactual, and the keystone hypothesis was outright unsatisfiable (vacuous). Every near-done claim had to be walked back. The only honest "done" is a green end-to-end build of the actual headline.
 **How to apply:** During a deep run, report STATE (k of N discharged, what each open piece needs, what the last assembly attempt revealed) — never proximity-to-completion — until the top target compiles green. Treat "I'm almost there" as a fingerprint to catch and rewrite into a concrete status. Pairs with assemble-early (run the end-to-end thing to learn the REAL distance) and "distance = inventory, not estimate".
+
+### [2026-06-24] A green build after a SCRIPTED edit does NOT prove the edit applied — confirm the change LANDED first
+In an autonomous run you apply many edits programmatically (a patch script, a sed/python rewrite, an LLM-written
+file). A subsequent green build does NOT prove the edit took effect: if the edit step silently failed — a parse
+error in the patch script, a non-matching anchor, a no-op replace — the file is UNCHANGED and the build passes
+on the OLD content, reading as success while your change never happened. A green build is evidence the file
+COMPILES, not that it contains your edit.
+**Why:** A programmatic file-patch script hit a parse error; because the script aborted, the target file stayed
+unchanged, yet the next build "succeeded" and an axiom-check "passed" — all on the pre-edit file. Trusting that
+green would have banked a non-change as done and reported a false milestone.
+**How to apply:** After any scripted/programmatic edit, CONFIRM it landed before trusting the build as evidence
+the change works — grep the file for the inserted token (a new declaration name, a changed constant) or check
+the VCS diff is non-empty. Only then does green mean your change compiled. Pairs with the done-claim-completeness
+rule (that guards import/changed-impact closure; this guards edit APPLICATION) — both are "a passing build is
+necessary, not sufficient" in unsupervised runs.
