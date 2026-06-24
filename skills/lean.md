@@ -731,3 +731,22 @@ When a sub-obligation is labelled "the genuine hard core / needs new machinery /
 A leftover side-hypothesis `sorry` (characteristic ≠ p, a nonvanishing, a positivity) often can't be closed because the surrounding declaration is stated at a generality where the condition is genuinely FALSE (e.g. it fails in small characteristic). Two consequences: (1) you cannot prove it in place — thread it as a typeclass/argument from the call site where generality narrows, and discharge it trivially there; (2) re-routing to an existing "proven over general k" version does NOT eliminate it unless that target's OWN binder list lacks the same hypothesis.
 **Why:** Spent effort hypothesizing a side-condition sorry could be dropped by routing to an already-proven general version; signature-diffing the target showed it carried the identical hypotheses, so the route removed nothing — and the condition was simply false at the stated generality, so it had to come from the narrower instantiation.
 **How to apply:** When a side-condition sorry resists, first ask "is this even TRUE at this signature's generality?" If no → thread it from where the type narrows (the concrete instantiation supplies it for free). Before banking "re-route to the proven lemma drops it," diff that lemma's binder list — a route only removes a hypothesis the target doesn't itself demand. Complements "your wiring verdict is a claim — test it" and the binder-audit / faithful-conditional entries.
+
+### [2026-06-24] Before a multi-brick CAMPAIGN on a "hard remaining piece", grep the conclusion's head symbol repo-wide — the bottleneck is often already proved (trivially)
+"Borrow the repo's library" (per-lemma) and "map existing routes" (per-route) escalate to the CAMPAIGN level:
+before launching a multi-brick effort to build the "hard remaining analytic core", grep the WHOLE repo for the
+conclusion's head symbol (the membership/regularity predicate applied to the specific object). The bottleneck
+is frequently ALREADY landed unconditionally — and often by a route far cheaper than the deep machinery you
+were about to build (e.g. a regularity⟹membership one-liner: "this composite is C^k, and C^k+boundary ⟹ the
+weighted-ℓ² membership at that order" dissolves a presumed-hard "general-data composition" into nothing). An
+inherited framing — a prior session's note, a stale docstring/board, your own earlier summary — that says "X is
+THE bottleneck" is a CLAIM, not a fact; the difficulty itself must be verified, not assumed.
+**Why:** A whole campaign (small-data series + planned heavy estimate + collaborator rounds + several dispatched
+bricks) chased a composition "bottleneck" that the repo already proved unconditionally via a trivial regularity
+route; the cited "open residual" docstring was stale (code had moved past it hours earlier). Three-to-four
+over-builds, all preventable by one repo-wide grep of the object before the first brick.
+**How to apply:** At the FIRST thought of "I'll build the hard piece X" — grep the conclusion object across the
+whole repo (head symbol + the specific argument), read any hit's actual statement (unconditional? what σ/order?),
+and treat every "this is the bottleneck" assertion as a claim to falsify by code, never a premise. The cheapest
+existing route also tells you the result was never hard. Pairs with #1.3 (don't trust docs), §3.3, and the
+per-lemma/per-route borrow rules — this is the same reflex one level up, at the campaign premise.
