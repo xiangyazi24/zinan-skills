@@ -750,3 +750,18 @@ whole repo (head symbol + the specific argument), read any hit's actual statemen
 and treat every "this is the bottleneck" assertion as a claim to falsify by code, never a premise. The cheapest
 existing route also tells you the result was never hard. Pairs with #1.3 (don't trust docs), §3.3, and the
 per-lemma/per-route borrow rules — this is the same reflex one level up, at the campaign premise.
+
+### [2026-06-24] Before building wiring around a "newly isolated" sorry, check if it's an EXISTING sorry restated
+When you isolate what looks like a new frontier residual X and build an elaborate reduction/wiring chain around
+it, first check whether X is algebraically equivalent to a sorry Y that ALREADY EXISTS elsewhere in the repo
+(via a simple `ring`/`linear_combination`/`congr` step). If X = Y, then X was never a separate gap — the
+elaborate isolation work was engineering (valuable for verifying the propagation chain) but doesn't add a new
+mathematical target. The resolution is to close Y (which may have different surrounding scaffolding better
+suited to the proof), or to recognize that the two sorries are the same one.
+**Why:** A "new frontier sorry" was isolated with several commits of non-circular wiring built around it; a
+fresh-context agent then closed it in one line by showing it equals an existing sorry via a trivial algebraic
+rearrangement. The wiring was real engineering (it verified axiom propagation), but the sorry was never new.
+**How to apply:** After isolating a frontier sorry X, before building wiring/dispatch around it, grep the repo
+for any other sorry whose STATEMENT differs from X only by ring-level rearrangement (`linear_combination`
+test: can you prove X from Y with zero mathematical content?). If yes, they're the same gap — record the
+equivalence and focus on whichever formulation has better surrounding scaffolding.
