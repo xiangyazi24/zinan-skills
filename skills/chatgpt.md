@@ -768,3 +768,18 @@ A git-drop answer is fetched with the gh CLI (or git) against the connected repo
 In git-drop mode the answer is a git COMMIT the collaborator pushes; that commit lands independently of — and often BEFORE — the dispatch process (`ask-gpt.py`) exits and fires its completion task-notification. Treating the process notification as the SOLE harvest trigger leaves a ready answer sitting unread while the process still shows "running." Once a question is in flight, proactively fetch the drop branch and check whether YOUR round's answer is already committed, rather than passively blocking on the process signal.
 **Why:** A dispatched question's full answer was already committed to the drop branch and readable via `git show` while its background dispatch task still showed "running / empty output"; waiting on the process notification alone would have delayed a harvestable answer, and the user flagged the passivity ("你自己不好好监控的吗").
 **How to apply:** After dispatching a git-drop question, poll the drop branch (`git fetch <remote> <scratch-branch>; git show …:<drop-file>`) and harvest the moment your round's answer is committed (verify the Q#/header per the freshness rule) — the process-exit notification is a BACKSTOP, not the only trigger. Generalizes: when a collaborator's deliverable is an artifact decoupled from the dispatch process, watch the ARTIFACT, not just the process. Pairs with the freshness-check and per-channel-monitoring entries.
+
+### [2026-06-23] Audit-LLM that keeps "confirmed true + isolated, but I can't produce it" = TOOL MISMATCH — stop re-dispatching the grind
+A strong-reasoning chat collaborator (audit-class) excels at confirming a claim, refuting a bad route, and
+ISOLATING the irreducible residual — but it does NOT produce large mechanical proofs / derivations. If two-plus
+rounds on the same target all come back "verified true + here's the exact remaining lemma, but I can't fill it,"
+that is not a cue to re-brief it sharper — it is a tool-mismatch signal. The channel's value (the isolation) is
+already extracted; further proof-dispatches are wasted long-thinks. Route the mechanical grind to a proof-grinder
+(or grind it yourself); keep the audit channel for the next isolate/verify step.
+**Why:** The same hard mechanical lemma was re-dispatched many rounds; every round re-confirmed truth and
+re-isolated the residual but produced no proof. It was finally closed by self-grind, not another audit round —
+the repeated dispatches after round ~2 added nothing.
+**How to apply:** After ~2 rounds that confirm-but-can't-produce on a MECHANICAL target, stop re-briefing it as
+a proof task. Harvest the reduction it DID give (often a clean sub-lemma + the surrounding assembly), then grind
+the core yourself or hand it to a grinder. Pairs with "verify, don't transcribe" and matching the dispatch to
+the collaborator's strength (audit vs grind).
