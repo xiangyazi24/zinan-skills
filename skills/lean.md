@@ -643,3 +643,16 @@ definitional bridge (`not_not`/`let`-unfold/coe) before suspecting the math. Pai
 When wiring a proof across a boundary where the two sides made DIFFERENT instance choices for the same typeclass (e.g. one side built with `open scoped Classical` → `Classical.propDecidable`, the other with an ambient `[DecidableEq k]`), the structures derived from that instance (the group, and the `•`/`HSMul` built from it) are different TERMS and won't unify — `exact borrowedLemma` fails with a type mismatch whose two sides differ ONLY in the instance argument. Bridge it LOCALLY: `convert borrowedLemma using N` to peel the structure toward the differing instance, then `congr` to expose the bare instance leaf, then `exact Subsingleton.elim _ _` (a `Decidable`/`DecidableEq` instance is a `Subsingleton`, so any two are propositionally equal). Do NOT instead change the file-wide instance to align them (dropping `[DecidableEq k]` for Classical, or adding `[CharZero k]`): that cascades — it breaks downstream theorems' instance synthesis, or triggers a `whnf` elaboration blowup in some dependent theorem.
 **Why:** A cross-module wire failed because one side's additive-group instance used Classical decidability and the other used an explicit `[DecidableEq k]`; `convert + congr + Subsingleton.elim` closed it in three lines, whereas every file-wide instance-alignment attempt cascaded (synthesis failures elsewhere, or a `whnf` heartbeat blowup in a downstream theorem).
 **How to apply:** `exact`/`rw` of a borrowed lemma fails with a type mismatch whose two sides differ only in a typeclass instance (decidability, or a group/monoid derived from it) → `convert ... using N; congr; exact Subsingleton.elim _ _`. Reach for local bridging before touching the file's `variable` instances.
+
+### [2026-06-23] An off-by-a-CONSTANT in a "should-close" reindex means you're on a PRE-TRANSFORMED object
+When a reindex/involution/completion that is provably TRUE refuses to close and the mismatch is a FIXED constant
+(off by k, not off by a variable), the cause is usually that the object you are transforming is ALREADY a
+folded/reindexed form of the raw data — and that earlier transform shifted the parameter by k. Back up to the
+raw/unfolded definition (the members before the fold), where the completion lands exactly.
+**Why:** A symmetry-orbit completion on a two-sided/folded object was off by a fixed constant; the fold had
+already reindexed one half into the other with a parameter shift, so the completion lemma's index never matched.
+Doing the step on the unfolded (raw-member) form made the same completion exact.
+**How to apply:** On a constant-offset failure in a reindex/completion, don't hunt for a sign/scale fudge —
+check whether the object is a derived/folded form (`unfold` it, or trace which earlier lemma produced it) and
+redo the step on the primitive members. Constant offset means wrong (pre-transformed) representative; variable
+offset means genuine index-algebra bug.
