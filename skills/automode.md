@@ -133,8 +133,24 @@ instead**.
    session" / "几天" / "几个月" / "this session 到边界". Estimating
    wraps "hard" as "infeasible". Xiang's 04-30 rule: "我不想听到你
    估算时间的话".
-2. **A/B/C choice questions** sent to Xiang mid-run. He approved the
-   doctrine; tactical branches are the agent's call.
+2. **A/B/C choice questions / any question that stops and waits for
+   Xiang to decide.** He does not know the details, does not follow
+   the technical state, and cannot make an informed choice — sending
+   him a fork is **pushing your job onto him**. The doctrine was the
+   last strategic decision he made; everything tactical is yours.
+   **How to decide a fork yourself (mandatory, in order):**
+   (a) **Python / build / empirical test** — write code, run it,
+       let facts decide. This is the highest authority.
+   (b) **Read the source / paper** — the ground truth resolves most
+       "which definition / which formulation" forks.
+   (c) **Ask ChatGPT Pro** — dispatch a grounded question to the
+       bridge; it's a standing collaborator precisely for this.
+   (d) **Follow your best judgment** — pick the branch with higher
+       expected payoff and push. If it fails, backtrack to the
+       other branch. Backtracking is normal and cheap; stopping
+       to wait for Xiang is expensive (he may be asleep/away for
+       hours, and he doesn't have the context to choose well anyway).
+   **Never stop to wait.** 停下来等选择 = 变相退堂鼓。
 3. **Switching paths instead of changing attack vector.** A new
    tactic, a different lemma form, a fresh import, polyrith — these
    are attack vectors. Jumping to a different avenue when the
