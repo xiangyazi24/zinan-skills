@@ -5,15 +5,28 @@ user-invocable: true
 
 # /self-improve — Skill Self-Improvement Loop
 
-让 skill 从实战中进化。用法：`/self-improve <skill-name>`（如 `/self-improve lean`）。
+让 skill 从实战中进化。两种模式：
 
-每次触发执行三步：温习 → 总结 → 改进。
+- **完整模式**：`/self-improve <skill>` — 温习 → 总结 → 改进（三步）
+- **温习模式**：`/self-improve refresh <skill>` — 只重新加载 skill 文档，不写入（轻量）
 
 ## 触发方式
 
-1. **手动**：`/self-improve lean`
-2. **Cron 自动**：每 3 小时，cron 写 marker → PostCompact 时检测 → 提示 agent 执行
+1. **手动**：`/self-improve lean` 或 `/self-improve refresh automode`
+2. **Cron 自动**：完整模式每 3 小时，refresh 模式每 1.5 小时（见 cron 配置）
 3. **口头**："温习一下 lean skill"、"skill 进化"、"总结经验到 skill 里"
+
+## 温习模式（refresh-only）
+
+`/self-improve refresh <skill>` — 只执行 Step 1，跳过 Step 2+3。
+
+**用途**：长 session 里 LLM 会因为 context 压缩逐渐忘记 skill 的具体约束。
+定期 refresh 把 skill 内容重新注入 context，强制刷新。
+
+**特别适用于 automode**：automode 跑 3-4 小时后，agent 会忘记 anti-pattern
+列表、统筹纪律、不停等选择题等约束。定期 refresh 是防遗忘的机械保障。
+
+refresh 完成后只发一行 DM："[refresh] automode (research窗口) ✓"
 
 ## 三步流程
 
