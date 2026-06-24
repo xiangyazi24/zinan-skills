@@ -454,3 +454,8 @@ have violated the directive.
 orchestrator: dispatch generation to a fresh-context tool, then verify/fix/wire/commit its output. Reserve
 your own cycles for the judgment the collaborator can't do (verification, error-catching, integration,
 honest accounting). This is the legitimate form of "keep going" when you personally can't grind well.
+
+### [2026-06-24] N instances never close a ∀-goal — verify the task's generality matches the GOAL's target before mass-producing
+A directive to "drive sub-task X toward goal G" can rest on a false premise that producing X closes G. Before grinding out a SERIES of X-instances, check whether G's stated target is strictly MORE GENERAL than any finite set of instances can discharge (e.g. an unbounded `∀ n` statement vs per-value certificates). If so, the instances are at best base cases / regression tests — they do NOT close the goal. Surface the generality gap as a direction fork (general proof vs restructure the goal vs accept incompleteness) instead of mass-producing instances that never converge.
+**Why:** A "compute the certificate and land it" directive was driven per-value, but the goal's sorry was a general unbounded statement; each new instance was real and verified yet structurally incapable of discharging the ∀-goal — continuing would have been motion without progress.
+**How to apply:** Before the SECOND instance in any "produce X toward G" loop, read G's exact target type. If it quantifies over an unbounded index, stop and surface the gap; keep instances only as base cases. Complements two-way-audit: here the brief's TASK is sound but cannot reach the GOAL's generality.
