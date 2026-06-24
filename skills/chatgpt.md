@@ -254,16 +254,32 @@ verify-don't-transcribe.
 Persists across sessions; highest `Q#` is the next to use. The ledger is the source of truth for "what's
 outstanding" — surface the `✗` rows when reporting a rolling-harvest round.
 
-## Three answer modes
+## Answer modes — git-drop is the DEFAULT and ALWAYS first priority (2026-06-24)
 
-ChatGPT answers come back through one of three channels. Pick the
-right one per task.
+**git-drop is not an option you choose — it is the default for EVERY call, and it
+is automatic.** As of 2026-06-24 `ask-gpt.py` auto-appends the git-drop instruction
+to every question (per `scripts/gitdrop-targets.json`) and detects completion from
+the COMMIT. You do **not** decide per-task whether to use git-drop, you do **not**
+hand-write the git-drop instruction, and you do **not** fall back to bridge-capture
+because it seems simpler. git-drop first, always — because DOM scraping is
+fundamentally unreliable (truncation, stuck "working", baseline-gating, SSR junk)
+and the git commit is byte-perfect and gh-verifiable.
 
-| Mode | Fidelity | Unattended? | When to use |
-|------|----------|-------------|-------------|
-| **bridge-capture** | Imperfect (DOM scraping) | ✅ yes | Short text answers, audits, math discussion |
-| **git-drop** (NEW) | Perfect (git commit) | ✅ yes | Code/proof artifacts — Lean files, LaTeX, scripts |
-| **github-write (legacy)** | Perfect | ❌ needs click | Only if git-drop isn't set up on a tab |
+| Mode | Fidelity | Role |
+|------|----------|------|
+| **git-drop** | Perfect (git commit) | **DEFAULT — every call, automatic. The answer IS the commit.** |
+| **bridge-capture** | Imperfect (DOM scraping) | **Fallback only** — when the connector can't write (read-only/unconfigured channel). Never the primary path. |
+| **github-write (legacy)** | Perfect | Deprecated; ignore. |
+
+- Configured channels (dm/chan/family/pbook per `gitdrop-targets.json`) → git-drop
+  is automatic; the answer lands as a commit and `ask-gpt.py` prints
+  `GIT-DROP OK [VERIFIED] …`.
+- The ONLY time you skip git-drop is `ASK_NO_GITDROP=1` for a genuinely
+  throwaway discussion question where no artifact is wanted — and even then the
+  answer comes via the (fragile) DOM path, so prefer git-drop unless there's a
+  reason not to.
+- If a channel isn't in `gitdrop-targets.json` yet and you're doing real work on
+  it, ask Xiang to add it rather than settling for bridge-capture.
 
 ### GPT job mode — the DEFAULT: ChatGPT reads the repo, you do NOT paste source (2026-06-23)
 
@@ -384,12 +400,43 @@ designated for scratch, **never** a sensitive/shared repo without Xiang's OK.
 git fetch <remote> <scratch-branch> && git show <remote>/<scratch-branch>:<drop-file>
 ```
 
-### git-drop monitoring — MANDATORY (2026-06-18 lesson)
+### git-drop completion = the COMMIT, fully decoupled from DOM (2026-06-24)
 
-After dispatching a git-drop task, you MUST actively monitor for
-completion. The failure mode (observed 06-18): dispatch two channels
-in background, check once at 0 bytes, assume "still running," miss
-that they finished minutes ago. Xiang had to ask "怎么感觉没提交".
+**The completion signal in git-drop mode is the git commit landing — NOT DOM
+capture, NOT `/api/wait` status, NOT the tab's purple/working color.** Those are
+all DOM-scraping-derived and unreliable; a tab can sit "working" purple for 40+
+min after the answer was already committed, and the old `/api/wait` (driven by
+DOM finalize) made the caller 空等 long after the commit landed (Xiang 06-24:
+"答案明明出来了，但是 llm 还是在空等").
+
+As of 2026-06-24 this is mechanized in `ask-gpt.py`: git-drop is the DEFAULT
+(auto-appended per `scripts/gitdrop-targets.json`), and the script **polls the
+target drop-file commit** and returns the instant a NEW commit appears,
+independent of DOM. On success it prints ONE line:
+
+```
+GIT-DROP OK [VERIFIED] <sha> <owner>/<repo>@<branch>:<file> — answer is the commit, fetch from repo.
+```
+
+**Caller rules:**
+- When you see `GIT-DROP OK [VERIFIED] …`, the task is **DONE**. Fetch the answer
+  from that commit (`gh api repos/<repo>/contents/<file>?ref=<branch>` or
+  `git show <remote>/<branch>:<file>`). Do **NOT** keep waiting, re-poll, re-fire,
+  or look at the tab color — the commit IS the answer.
+- Never infer "still running" from a purple/working tab or a 0-byte DOM capture in
+  git-drop mode. Those are decoupled now; ignore them.
+- `[reported]` (not `[VERIFIED]`) means the SHA came from the chat reply but gh
+  couldn't confirm it — treat as suspect (possible hallucinated commit), verify
+  the commit yourself before trusting.
+- `ASK_NO_GITDROP=1` for a pure-discussion question where no commit is wanted
+  (then completion falls back to the normal DOM/`/api/wait` path).
+
+### git-drop monitoring — one tracked waiter per channel (2026-06-18)
+
+Even with commit-polling, dispatch each channel as its own `run_in_background`
+Bash so each notifies on its OWN return — don't batch into one `wait` (blocks on
+the slowest) or fire-and-forget with bare `&` (orphans it; observed 06-18:
+dispatch two, check once at 0 bytes, miss that they finished — "怎么感觉没提交").
 
 **Rule: one tracked waiter per channel, immediate harvest.**
 
