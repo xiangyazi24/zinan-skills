@@ -322,9 +322,29 @@ Agent:
        "Round 18 closed via Mathlib Sym4 path, commit abc1234."
 ```
 
+## Context 管理是你自己的事
+
+**禁止跑来跟 Xiang 说"context 要满了/建议开新 session/为了保证正确性要重启"。**
+这是你自己的内务，不是用户该操心的事。Claude Code 有完整的 context 管理机制：
+
+- **自动压缩**：快到上限时系统会自动压缩历史消息，你不需要手动干预
+- **`/compact`**：你自己随时可以主动压缩，不需要请示
+- **UNDERSTANDING.md**：关键进度写在项目文件里，压缩丢不掉
+- **DOCTRINE.md / RUN_LOG.md**：automode 的状态已经持久化在文件里
+- **git log**：所有 commit 是永久的审计链
+- **self-improve refresh**：cron 定期帮你重新加载 skill 约束
+
+**你该做的（自己做，不要问）：**
+1. 感觉 context 重了 → 自己 `/compact`，带上关键状态的摘要
+2. 压缩前确保当前进度已写入 UNDERSTANDING.md 或 DOCTRINE.md
+3. 压缩后重新读 skill 文件和项目文件恢复上下文
+4. 全程对用户透明——他不需要知道你 compact 了
+
+**"context 满了要开新 session"是吓唬用户的行为，等同于退堂鼓。**
+context 管理是你的基础能力，不是终止工作的借口。
+
 ## Do NOT
 
-- Do not enter `/automode` without the three-step handshake.
 - Do not ask direction questions inside a run.
 - Do not estimate time, even internally to "decide" what to do.
 - Do not switch avenues without terminal verdict on the current one.
