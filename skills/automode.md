@@ -226,6 +226,37 @@ design + Xiang communication. Codex's strength is patient grinding of
 long proof chains and large infrastructure. ChatGPT's strength is
 sharp multi-round audit critique. Coordinate, do not compete.
 
+### ChatGPT 统筹监控（滚动使用纪律）
+
+在 automode 期间，ChatGPT Pro 各 channel（ac, ac2, …）是并行算力。
+agent 必须**主动监控和调度**，不能"想起来才用"。
+
+**滚动状态表（每轮内部维护，不输出）：**
+
+| channel | 状态 | 发出时间 | 问题摘要 | 返回? |
+|---------|------|----------|----------|-------|
+| ac      | busy | 14:30    | xx引理是否成立 | 否 |
+| ac2     | idle | —        | —        | — |
+
+**调度纪律：**
+
+1. **空闲 channel 是浪费。** 每次做决策时（开始新 avenue、hit
+   difficulty、需要审计）先看状态表——有空闲 channel 就必须派任务。
+2. **统筹法：发出 > 处理 > 再发。** 一个 answer 回来了，先派下一个
+   问题出去（让 channel 继续跑），再处理刚回来的 answer。不要处理完
+   再想要不要问——问题在处理期间就应该已经在飞了。
+3. **长 think 期间不空等。** ChatGPT Pro 的 extended thinking 可能
+   6-20 分钟。这段时间 agent 继续推主线，不是"yield and wait"。
+4. **每小时至少检查一次 channel 状态。** 长 grind 容易忘记 channel
+   存在（这是爸爸反复点名的问题——feedback_proactive_chatgpt）。
+   强制检查：所有 channel 都在跑吗？有没有回来了没处理的 answer？
+5. **dispatch 质量 > 数量。** 问 tactic-level 的具体问题比要完整代码
+   有效（feedback_chatgpt_collab）。一个好问题比三个泛问题有用。
+
+**automode TG 报告里包含 ChatGPT 使用情况：**
+- 每次 avenue 完成时附带："ChatGPT: ac 问了 3 轮（引理验证×2 + 设计审计×1），ac2 闲置。"
+- 如果所有 channel 闲置超过 1 小时，这本身就是一个该反思的信号。
+
 ## Method-flexibility is Xiang's call, not the agent's
 
 When stuck, the temptation is to "be flexible" — skip a hard piece,
