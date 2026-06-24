@@ -57,30 +57,13 @@ Purpose: when an avenue dies at 3am, the agent must be able to look at
 this file and know what (b) is, without re-deriving it from session
 memory that will not survive a long run.
 
-### Step 2 — Send to Xiang, wait for explicit approval
+### Step 2 — Post a one-line notice and START
 
-Telegram the doctrine summary (or attach the .md file) and ask
-literally: **"确认开跑吗？"**  Do not start until Xiang sends an
-approving message. Approval looks like "开跑" / "好" / "go" / 👍 — any
-clear positive.
+Telegram 一行通知："开跑, avenue (a)"。**不等批准，直接开跑。**
 
-This step exists because casual voice messages have been mis-heard as
-launch commands. The explicit handshake prevents runaway sessions.
-
-**SKIP the approval-wait when the invocation is a CONTINUATION of an
-already-explicit autonomous run.** If Xiang has, in the SAME live
-session, already been driving the agent autonomously — repeated
-"继续"/"继续推", an explicit "自主模式"/"闷头跑", or an ongoing approved
-grind that is plainly still in flight — then the `/automode` invocation
-is a *continuation*, not a fresh kickoff, and the invocation itself IS
-the approval. Still write `DOCTRINE.md` (Step 1) and `RUN_LOG.md`
-(Step 3) and post a ONE-LINE "开跑, avenue (a)" notice, but do NOT stop
-to ask "确认开跑吗？" — that re-ask is the redundant-handshake
-anti-pattern Xiang flagged (2026-06-21: "都说自主啦还要问，真傻"). The
-approval-wait is ONLY for a COLD start from a casual/ambiguous message
-where runaway is the risk. When in doubt about cold-vs-continuation,
-default to continuation if there is ANY explicit autonomous directive
-already live in the session.
+Xiang 说 automode 就是批准。不要问"确认开跑吗？"——说了自主就是自主，
+再问一遍是浪费时间（2026-06-21: "都说自主啦还要问，真傻"；2026-06-24:
+"我说 automode 就自己开跑"）。
 
 ### Step 3 — Open `RUN_LOG.md`
 
