@@ -621,3 +621,20 @@ To make a non-`module` file importable by a `module` file (Lean's module system)
 When the lemmas needed to prove a goal live ABOVE it in the import DAG (the goal's file cannot import them without a cycle), don't try to thread the proof downward — RELOCATE the goal AND everything downstream of it into a NEW file that sits above both layers, importing the goal's original file AND the proof-material files; then truncate the goal out of its original location. Re-thread any hypotheses the relocated downstream now needs through the moved theorems.
 **Why:** An obligation sat at the BOTTOM of the import graph while its discharge materials (wiring lemmas + an independent non-circular fact) sat above it; proving it in place was an import cycle. Moving it plus its consumer chain into a new top file made the discharge both legal and non-circular.
 **How to apply:** A sorry/lemma can't reach its proof inputs without an import cycle → create a top file importing both layers, relocate the lemma + its dependents there, truncate the origin, and fix the newly-needed hypothesis threading build-guided (partial-application errors at `.1`/`cases` sites pinpoint each call).
+
+### [2026-06-23] Harvesting LLM-generated Lean: classify clean-vs-sorried per decl, land only sorry-free; expect tactic-SCOPE bugs
+A large block of collaborator-generated Lean (an LLM "git-drop" / answer) is ~80% correct but never just
+compiles. Two disciplines: (1) PROGRAMMATICALLY classify each decl as sorry-free vs sorried before landing
+anything — split on `theorem`/`def` boundaries, grep each block for `sorry` — and commit ONLY the sorry-free
+prefix as additive infrastructure (a committed file cannot carry sorry; the sorried structural/hard pieces
+stay out until separately closed). (2) Verify-build-fix the clean pieces expecting a small set of predictable
+failure classes: tactic SCOPE — `unfold`/`rw`/`simp` applied to the goal but NOT to a hypothesis it must also
+rewrite (fix: `unfold … at h ⊢`); and unbridged definitional steps — double negation (`simpa only [not_not]`
+when a `¬G` set is really `{¬¬Danger}`), un-unfolded `let`, and coercion mismatches (`.val` vs `↑`).
+**Why:** A multi-decl LLM Lean drop had exactly these: one proof used `unfold … ` (goal only) then failed to
+`rw` a hypothesis still carrying the folded definition; another produced a `{¬G}` set that needed `not_not`
+to become the target `{Danger}`. Classifying first meant the sorry-free skeleton landed green while the
+sorried hard cores were cleanly deferred — no broken commit, no wasted verification on the unfinished parts.
+**How to apply:** Receiving any sizable Lean from a collaborator/LLM — scan decls for `sorry` first, land the
+clean prefix additively, and on each verify-build failure suspect tactic scope (`at h ⊢`) and a missing
+definitional bridge (`not_not`/`let`-unfold/coe) before suspecting the math. Pairs with verify-don't-transcribe.
