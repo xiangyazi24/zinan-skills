@@ -681,3 +681,18 @@ When the canonical build host's disk is too full to hold a fresh build tree (too
 Proving an equation over a dual-number / square-zero extension (`TrivSqZeroExt R M`, `DualNumber R`) by splitting into first (`fst`) and second (`snd`) components: the `snd` of a product expands (via the `snd_mul` lemma) to a RIGHT-module action `MulOpposite.op a • b`, NOT an ordinary multiplication — so `ring`/`linear_combination` cannot normalize it and reports "ring failed". Rewrite the smul to a product first (`op_smul_eq_mul : MulOpposite.op a • b = b * a`, a `rfl` lemma) plus `smul_zero` for the `op _ • 0` cross-terms, then the closer succeeds. Also reduce the nat-subtraction exponents (`n-1`, via `Nat.add_sub_cancel`) the component split leaves behind.
 **Why:** A from-scratch power/eval lemma over a nilpotent extension stalled with "ring failed" on a goal containing `MulOpposite.op x • (…)`; the second component's multiplication is a bimodule right-action, opaque to `ring`, until converted to a plain product.
 **How to apply:** Computing in a square-zero / dual-number extension via an `fst`/`snd` (`TrivSqZeroExt.ext`) split → put `op_smul_eq_mul, smul_zero` in the `simp only` set before the closing `ring`/`linear_combination`, and reduce any `n-1` exponents. Distinct from the instance-coherence-diamond entry: that aligns typeclass instances; this converts a right-module smul that the ring normalizer cannot see through.
+
+### [2026-06-24] Wire the downstream chain FROM the open frontier sorry, then axiom-check it propagates
+When a proof reduces to ONE open lemma X, don't wait to close X before building the rest. Prove every
+downstream consumer up to the headline FROM X's STATEMENT — each compiles and carries `sorryAx` transitively.
+Then `#print axioms headline` must show ONLY {core axioms} + `sorryAx` (nothing else: no circular/forbidden
+axiom). A green chain + that clean axiom set is a PROOF that X is the sole remaining gap and that closing X
+auto-flips the whole headline clean — zero further wiring. It also catches a hidden SECOND bad dependency
+early: an extra axiom in the set means the chain is not actually one-lemma-away.
+**Why:** A headline was reduced to one hard frontier lemma; proving the entire chain to the top statement from
+that lemma's statement + `#print axioms` (showing sorryAx-via-the-frontier-only, no circular axiom) proved the
+frontier is the only gap and that closing it propagates — verified and committed while the frontier stayed open.
+**How to apply:** Reduced to one open lemma X? Build X's consumers (the wiring to the headline) from X's
+statement now; require `#print axioms headline` = core ∪ {sorryAx}, nothing more. Constructive forward-wiring
+with an axiom-verified propagation guarantee — the complement to circularity-DETECTION (finds hidden cycles);
+this PROVES forward that a single open lemma is the whole remaining distance.
