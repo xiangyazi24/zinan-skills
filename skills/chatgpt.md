@@ -450,6 +450,19 @@ GIT-DROP OK [VERIFIED] <sha> <owner>/<repo>@<branch>:<file> — answer is the co
 - `ASK_NO_GITDROP=1` for a pure-discussion question where no commit is wanted
   (then completion falls back to the normal DOM/`/api/wait` path).
 
+**Sandbox-instead-of-commit failure (2026-06-25).** ChatGPT sometimes writes the
+answer to its code-interpreter SANDBOX (`sandbox:/mnt/data/…`, a "Download" link)
+instead of committing via the GitHub connector — NO commit lands and the file is
+unreachable (it's in ChatGPT's ephemeral container, not git). This is mechanized,
+not your job: `ask-gpt.py`'s auto git-drop instruction now explicitly forbids the
+sandbox/`/mnt/data`/download path and demands a real commit SHA; and it DETECTS a
+sandbox reply with no commit, printing `✗ GIT-DROP FAILED — ChatGPT wrote a SANDBOX
+file … RE-DISPATCH` (verdict `GITDROP-SANDBOX-FAIL`, ledger `✗ sandbox-no-commit`).
+**Caller action on that banner: RE-DISPATCH the question** (do not wait, do not try
+to fetch — there is nothing in git). Do NOT hand-write git-drop instructions to
+"fix" this — the auto-appended instruction already handles it; hand-writing risks
+double-instructions.
+
 ### git-drop monitoring — one tracked waiter per channel (2026-06-18)
 
 Even with commit-polling, dispatch each channel as its own `run_in_background`
