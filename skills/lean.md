@@ -799,3 +799,8 @@ mentioned it offhand. Searching for the paper's method name in the repo would ha
 **How to apply:** At session start on a stuck identity, `find . -name '*<PaperMethodName>*'` and
 `grep -rln '<method_keyword>' *.lean`. Read any matching module's sorry count + assembly plan before choosing
 your attack route. The source paper's proof strategy is the FIRST place to look, not the last.
+
+### [2026-06-24] A packaged algebraic structure's type-class gate ≠ its raw coordinate formulas' gate — check the FORMULA's generality
+When a Mathlib algebraic structure (group law, module action, ring instance) requires a strong hypothesis (Field, IsDomain), the underlying raw coordinate FORMULAS it is built from often work over a strictly weaker ring (CommRing). A wall "no group law over this ring" may dissolve if you bypass the packaged structure and call the raw formulas directly. This unlocks evaluation over extension rings (dual numbers, power series, localizations) where the packaged structure doesn't apply.
+**Why:** The group law on an algebraic object was field-only in Mathlib, blocking a key construction over a non-field extension ring. Checking the raw coordinate-formula file revealed the formulas were defined over `[CommRing R]` — evaluating them directly over the extension ring bypassed the wall and unlocked the entire construction.
+**How to apply:** When blocked by "Mathlib's packaged X doesn't work over ring R," grep the underlying formula file's `variable` line — if the raw definitions use `[CommRing R]` (or weaker), call them directly over R, bypassing the packaged structure's field gate. The packaged structure gates the QUOTIENT/EQUIVALENCE layer; the raw formulas gate only the POLYNOMIAL layer.
