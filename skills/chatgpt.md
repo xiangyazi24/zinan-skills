@@ -894,3 +894,18 @@ the proof: switch the task from "prove X" to "write a Python script that enumera
 candidate groupings, and reports whether a bijection/decomposition exists." Run the script yourself and use the
 output as mathematical evidence (empirical test = highest-authority decision method per automode). Complements
 the tool-mismatch entry: that says STOP re-dispatching the proof; this says what to dispatch INSTEAD.
+
+### [2026-06-24] A mis-framed question yields a CONFIDENTLY-WRONG audit — re-read your framing + verify the artifact before acting on a strategic verdict
+The collaborator answers the question you ACTUALLY asked, not the one you meant. If your prompt mis-states the
+setup (e.g. "route R proves theorem T directly" when R only discharges a sub-obligation of T), a faithfulness/
+correctness audit comes back fluent, citation-laden, and CONFIDENTLY WRONG — recommending a pivot/tear-down that
+follows validly from your wrong premise. The audit isn't lying; it inherited your framing error. A SURPRISING
+strategic verdict (pivot, abandon, "this is unfaithful, rebuild") is a hypothesis about the artifact, not a
+conclusion: before acting, (a) re-read your own prompt for a misframe, and (b) open the actual artifact and
+confirm against it.
+**Why:** A faithfulness consult fed a prompt that mis-described the construction's role confidently returned
+"the whole route is unfaithful — pivot"; reading the actual target definition showed the architecture was already
+faithful. Acting on the prose would have torn down correct work.
+**How to apply:** On any pivot/tear-down/mislabel verdict, do NOT relay or act until you re-read your question for
+a misframe AND verify against the real artifact. Strategic verdicts get the artifact check; cheap tactical answers
+move faster. Pairs with verify-don't-transcribe + "verify a design answer against a structural code signal."
