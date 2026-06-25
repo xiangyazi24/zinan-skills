@@ -879,3 +879,18 @@ When you dispatch a collaborator to CROSS-CHECK a result you can settle yourself
 Offloading a hard sub-problem to a fresh-context sub-agent of your OWN architecture is not a substitute for firing the external collaborator in parallel. A sub-agent is the same reasoner with a clean context window — it shares your systematic blind spots; the external collaborator's value is INDEPENDENCE (a different model catches failure modes your own architecture is consistently blind to). "I already dispatched a sub-agent on it" must not suppress the parallel-consult reflex.
 **Why:** On a hard frontier I spawned same-architecture sub-agents to grind the sub-problems and, feeling the work was "covered," skipped the parallel external consult — losing the independent cross-check exactly where it mattered most. Fresh context ≠ independent perspective.
 **How to apply:** When a hard sub-problem appears, fire the external collaborator in parallel REGARDLESS of whether you also spawned a sub-agent — they serve different roles (sub-agent = parallel labor in your own voice; external = independent audit/roadmap). Keep it self-contained: ask a roadmap/tactic-level question with minimal inline context while the sub-agent grinds. Pairs with the proactive-engagement default and "split tactical vs strategic across channels".
+
+### [2026-06-24] When the collaborator can't PRODUCE the artifact, use it to write COMPUTATIONAL DISCOVERY scripts instead
+An audit-class collaborator that can't produce a proof/derivation CAN write computational scripts (Python, SageMath)
+that DISCOVER the mathematical structure your proof needs — e.g. enumerate both sides of an identity, test candidate
+bijections, find grouping patterns, or refute conjectured decompositions with concrete counterexamples. This is a
+DIFFERENT tool-match than asking for a proof (which triggers the "confirm-but-can't-produce" anti-pattern). The
+collaborator writes the probe script; YOU run it locally and interpret the output as mathematical evidence.
+**Why:** After ~8 rounds of "confirm TRUE + can't produce the proof," dispatching the same collaborator to write a
+Python bijection-enumerator instead produced the terminal finding (the identity has no per-term bijection — the
+cancellation is irreducibly global). The computational probe answered a question no amount of audit rounds could.
+**How to apply:** When a collaborator has confirmed an identity's truth and isolated its structure but can't produce
+the proof: switch the task from "prove X" to "write a Python script that enumerates both sides of X, tests
+candidate groupings, and reports whether a bijection/decomposition exists." Run the script yourself and use the
+output as mathematical evidence (empirical test = highest-authority decision method per automode). Complements
+the tool-mismatch entry: that says STOP re-dispatching the proof; this says what to dispatch INSTEAD.
