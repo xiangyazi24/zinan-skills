@@ -785,3 +785,17 @@ When a carried hypothesis gates on a predicate like `¬(x = 0)` (excluding the e
 When a weighted-bound induction uses a prefix-sum budget `W(j+1) ≥ W(j) + positive_term` (the step ABSORBS each cycle's additive defect by INCREASING W), W is monotone non-decreasing and converges to a finite positive limit. The unweighted error `err ≤ W / k^depth` is controlled ONLY while the depth exponent `k^depth` is large enough to compensate. Once the depth exhausts (e.g. `depth = D − j` hits zero at `j = D`), `err ≤ W · k^{j−D}` AMPLIFIES instead of converging. A "tail budget" (`W → 0`) would fix this, but a tail budget is DECREASING — and the step requires W to INCREASE by a positive term each cycle. These two monotonicity directions are algebraically incompatible (unless every additive term is zero). So the unweighted error CANNOT be proved → 0 from the weighted-bound API alone when the depth is exhausted and the recurrence multiplier exceeds 1. The convergence must come from a SEPARATE direct-dynamics argument (the "Reach premise" pattern).
 **Why:** Attempted to prove a per-coordinate tube bound from the weighted-bound induction's prefix budget after the depth ran out; an independent algebraic audit proved the obstruction: prefix step (W increasing) + convergence (W decreasing) ⟹ additive term = 0, proven as a one-line Lean theorem. The fix was recognizing the tube bound as a "Reach premise" — a genuinely separate layer of analysis (ODE dynamics), not a schedule-algebra consequence.
 **How to apply:** When a weighted-bound induction's prefix budget exhausts its depth exponent and you need the unweighted error to converge, do NOT try to swap to a tail/decreasing budget while keeping the same step — the monotonicity directions conflict. Either: (a) use a genuinely contractive recurrence (`amp < 1`) so depth grows instead of shrinking; or (b) carry the convergence as a separate hypothesis ("Reach premise") proved by direct dynamics analysis. Check the parallel route's capstone — if it also carries the same hypothesis, your "open atom" is a Reach premise, not a schedule bug.
+
+### [2026-06-24] Search for the SOURCE PAPER's proof method as a repo MODULE before grinding any route
+When a formalization is stuck on a hard identity, grep the repo for the **source paper's own proof method**
+by name (e.g. the paper's named bijection, its named theorem, its technique keyword). If the paper proves the
+identity via "the Hecke bijection", search `*Bijection*.lean`; if via "Sturm bound", search `*Sturm*.lean`.
+The repo may already contain a partially-built module encoding that exact method — with all ingredients proven
+and only the final assembly missing — while you grind a completely different (and possibly dead) route.
+**Why:** A repo contained a 443-line module encoding the source paper's named bijection with ALL mathematical
+ingredients proven (0 sorry), but 8 days were spent grinding a different coefficient-level route (which was
+ultimately proved impossible by computational probe). The bijection module was found only when a subagent
+mentioned it offhand. Searching for the paper's method name in the repo would have found it immediately.
+**How to apply:** At session start on a stuck identity, `find . -name '*<PaperMethodName>*'` and
+`grep -rln '<method_keyword>' *.lean`. Read any matching module's sorry count + assembly plan before choosing
+your attack route. The source paper's proof strategy is the FIRST place to look, not the last.
