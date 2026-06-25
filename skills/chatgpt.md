@@ -398,12 +398,19 @@ in one git commit. No need for bridge capture at all. The bridge
 `ask-gpt.py` call still runs (to get the SHA from chat text), but the
 authoritative answer is always in the git file.
 
-**Extracting code from the drop file:**
-```bash
-# After fetching, extract Lean code blocks:
-git show <remote>/<scratch-branch>:<drop-file> | \
-  sed -n '/^```lean/,/^```/p' | sed '/^```/d' > /tmp/answer.lean
+**Reading the answer — code by default, prose on demand (2026-06-25).** `ask-gpt.py`
+now AUTO-EXTRACTS on a git-drop success: it fetches the committed file, writes the
+fenced code to `/tmp/gpt_<ch>.<ext>` (`.lean`/`.py`/`.tex`/… by the block language)
+and the full markdown to `/tmp/gpt_<ch>.md`, and the success line points at both:
 ```
+GIT-DROP OK [VERIFIED] <sha> <repo>@<branch>:<file> | CODE→/tmp/gpt_dm1.lean (read this; prose/reasoning in /tmp/gpt_dm1.md)
+```
+- **Default: read the CODE file** (`/tmp/gpt_<ch>.<ext>`) — cheaper tokens, more
+  direct, no prose in context. Do NOT `git show` / read the whole `.md` reflexively.
+- **On demand: read `/tmp/gpt_<ch>.md`** (the full prose + reasoning) only when you
+  need to deepen understanding — which Mathlib lemma, the type-correction note, why.
+- The extraction is best-effort; if the line shows no `CODE→` path, fall back to
+  fetching the repo file directly.
 
 **Setup**: before first use on a channel, the drop file + scratch
 branch must already exist in the connected repo. This is per-tab setup
