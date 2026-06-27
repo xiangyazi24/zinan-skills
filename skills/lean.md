@@ -1010,3 +1010,21 @@ When a monolithic theorem exceeds `maxHeartbeats`, splitting it into `private th
 A telescope proof `Σ (L_k - R_k) = E_0 - lim E_k` requires `E_k → 0`. When `E_k` involves a multiplicative inverse (`locInv(F)`) times an iterated product `(1 + G)^k`, expand it: `locInv(F) * (1+G)^k = locInv(F) + Σ_{j=1}^k C(k,j) G^j F^{j-1}` (using `locInv(F)*F^j = F^{j-1}`). The coefficient at any fixed evaluation point is a POLYNOMIAL in k — it does NOT converge to 0. Building telescope infrastructure (cross-telescope lemmas, eventually-zero lemmas, finsum equality) on this false convergence wastes the entire effort. The correct route is usually an algebraic identity proof (integral domain / uniqueness of solutions to a functional equation) that bypasses the iteration altogether.
 **Why:** Built 300+ lines of telescope infrastructure on the hypothesis that a "sheared tail" `(W * locInv(B) * R^k * H).coeff(g) → 0`. Algebraic expansion via the binomial theorem + `locInv(B)*B^j = B^{j-1}` showed the coefficient is a degree-J polynomial in k (the `locInv(B)` terms cancel between the shifted and unshifted products, leaving a pure polynomial), never eventually zero. The entire telescope was dead code; the fix was a completely different proof route using `NoZeroDivisors` on Hahn series.
 **How to apply:** Before building a telescope proof where the bridge-error involves `locInv(F) * R^k`: expand `R = 1 + G`, apply the binomial theorem, simplify `locInv(F) * G^j * F^j = G^j * F^{j-1}`, and check whether the result is polynomial in k. If yes, the "eventually zero" claim is false and the telescope route is dead — look for an algebraic/uniqueness proof instead.
+
+### [2026-06-27] For small-modulus proofs (mod 4/8), substitute-and-ring beats ZMod cast
+To prove `x² % 4 ∈ {0,1}` or `expr % 8 = 5` from parity hypotheses, avoid ZMod: `ZMod.intCast_eq_intCast_iff'`
+rewrites are fragile (the coerced literal `((0 : ℤ) : ZMod 4)` ≠ `(0 : ZMod 4)` for `rw`, and `decide`/
+`fin_cases` on ZMod 8 can be slow). Instead: substitute the explicit parametrization (`obtain ⟨k, rfl⟩ : 2 ∣ x`),
+expand the power with `have : (2*k+1)^4 = 8*(…) + 1 := by ring`, then `omega` for the modular conclusion.
+**Why:** 5+ build iterations fighting ZMod API; the pure-ℤ substitute-ring-omega pattern compiled first try.
+**How to apply:** Any proof that needs `x^n % m = r` from `x % 2 = 0/1` — parametrize x, ring-expand to `m*q+r`,
+omega. Reserve ZMod for large-modulus or structural arguments where `fin_cases <;> decide` is genuinely clean.
+
+### [2026-06-27] `ring` canonical form kills `rw` in calc chains — rewrite at hypotheses instead
+A `calc` step proved by `ring` normalizes the expression to a canonical form (e.g. `5*G*F₂` → `F₂*G*5`), so the
+NEXT step's `rw [← hF₁eq]` can't find the subterm `5*G`. Fix: don't use `calc` through `ring`; instead
+`rw [hF₁eq] at h` on the hypothesis, then use `mul_assoc`/`ring` to reassociate, then `mul_left_cancel₀`.
+**Why:** 3 build iterations of "Tactic rewrite failed: Did not find an occurrence of the pattern" in calc chains
+where intermediate steps used `ring`. Switching to direct hypothesis rewriting compiled immediately.
+**How to apply:** Whenever a calc chain has a `ring`-proved step followed by an `rw` step — suspect canonical-form
+mismatch. Rewrite at hypotheses (not via calc) to avoid depending on ring's internal normalization.
