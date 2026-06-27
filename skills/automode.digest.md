@@ -31,6 +31,7 @@ Once the handshake completes:
 ## Banned anti-patterns (fingerprint self-check)
 These are the surface forms of 退堂鼓. If the agent finds itself
   1. **Estimating time.**
+  2. **A/B/C choice questions / any question that stops and waits for**
   3. **Switching paths instead of changing attack vector.**
   4. **Abstractifying difficulty.**
   5. **Naming a sorry / placeholder and stopping.**

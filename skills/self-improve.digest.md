@@ -9,14 +9,14 @@
   3. **口头**
 
 ## 温习模式（refresh-only）
-`/self-improve refresh <skill>` — 只执行 Step 1，跳过 Step 2+3。
-  Key: 特别适用于 automode
+`/self-improve refresh <skill>` — 读 digest（不是 full），跳过 Step 2+3。
+  Key: Digest 是派生物，永远不手动编辑 | 特别适用于 automode | 读的是 digest 文件
 
 ## 三步流程
 
 ### Step 1: 温习（Refresh）
-完整重新加载目标 skill 文档：
-  Key: 核心约束是什么？这几个小时有没有偏离？
+加载目标 skill 文档：
+  Key: Refresh 模式 | 核心约束是什么？这几个小时有没有偏离？
 
 ### Step 2: 总结（Reflect）
 回顾本 session 中与该 skill 相关的工作，提取候选经验。
