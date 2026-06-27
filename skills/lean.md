@@ -250,7 +250,23 @@ Load the Lean 4 formalization playbook, project context, and the hard-won workin
      §3.3 (the failure-mode catalogue), the CHECKLIST board (§5), and `/fable` (Fable-as-master: design the
      route + dispose of deliverables, delegate the grind).
 
-8. Report: "Playbook + tactics loaded. [N] sorry found. [If a CHECKLIST exists: k/N atoms ✅.] Ready for Lean work."
+8. **Domain-specific proof toolbox — encapsulate recurring proof patterns as plain lemmas.**
+   When a project accumulates the same 3-4 step proof shape in multiple places (e.g. a CRN step bound,
+   a concentration tail, a convergence envelope), extract it into a reusable `lemma` / `theorem` in a
+   dedicated `Toolbox.lean` (or `Lib/Tactics.lean`). Parameters = the hypotheses that vary; conclusion =
+   the goal the pattern always lands on. Call sites reduce to `exact toolbox_lemma h₁ h₂` or `apply`.
+   - **This is NOT metaprogramming.** No `macro_rules`, no `elab`, no tactic extension — just ordinary
+     lemmas. Reviewers can read them, `#print axioms` works normally, Mathlib upgrades don't break them.
+   - **Custom `simp` sets** for domain-specific normalization: tag lemmas with a project attribute
+     (`@[crn_simp]`, `@[pp_simp]`) and call `simp only [crn_simp]` to close routine goals. Same idea
+     as Mathlib's `@[continuity]` / `@[measurability]` bundles.
+   - **When to extract:** a proof shape appears ≥3 times across different files. Don't pre-build a
+     toolbox speculatively — extract when the pattern is verified recurring.
+   - **When to escalate to a real tactic:** only if the pattern requires case-splitting + normalization
+     that `simp` sets can't express (rare). Use `macro_rules` (lightest) first; full `elab` only as
+     last resort. This is a future consideration, not a default.
+
+9. Report: "Playbook + tactics loaded. [N] sorry found. [If a CHECKLIST exists: k/N atoms ✅.] Ready for Lean work."
 
 $ARGUMENTS is an optional project path. If provided, cd there first.
 
@@ -959,3 +975,8 @@ In a multi-file Lean project, `lake env lean Foo.lean` type-checks the file but 
 When you need to find a specific Mathlib lemma name, theorem, or API pattern, dispatch to ChatGPT (which has the repo connector and can search Mathlib source directly), NOT to a subagent that blind-greps `.lake/packages/mathlib/`. ChatGPT resolves API lookups in one round; a subagent iterates `grep` patterns for many rounds, burning tokens on file reads that return nothing. This is the SEARCH-vs-BUILD split: ChatGPT for finding what exists, subagent/Codex for writing new code that uses what you found.
 **Why:** A subagent spent 200K+ tokens blind-searching Mathlib for a convolution identity (reading files, trying grep patterns, iterating), while a single ChatGPT dispatch with "search Mathlib for X" would have returned the exact theorem name in one round. The repo connector gives ChatGPT indexed search over the full library — a capability subagents don't have.
 **How to apply:** "What's the Mathlib name for X?" or "Does Mathlib have Y?" → ChatGPT, always. "Write a Lean proof using theorem Z" → subagent/Codex. Never send a subagent to FIND a Mathlib theorem; only send it to USE one you've already identified.
+
+### [2026-06-27] A coefficient-reindexing relation does NOT commute with order-dependent constructions — test it before building on it
+When a coefficient-level relation (a "sigma relation", a shear, a substitution) reindexes Hahn series coefficients via a map φ on the exponent monoid, and the map is NOT order-preserving on the well-ordered exponents, then order-dependent constructions — Hahn inverse (`locInv`, which expands as a geometric series starting at the minimal exponent), `order`, `leadingCoeff`, `SummableFamily.powers` — do NOT commute with φ. Building an infrastructure of sorry'd lemmas on the assumption that "σ preserves inverses" (e.g. `SigmaRel (locInv F) (locInv Fs)`) will produce false statements that compile with sorry but cannot be discharged. Always TEST such a commutativity claim with a concrete coefficient evaluation BEFORE building on it.
+**Why:** Built 100+ lines of telescope infrastructure assuming `SigmaRel (locInv B) (locInv Bs)`, including a sheared tail proof and assembly. A concrete coefficient check (codex) showed the sigma shear `(e,m,s) → (e+45m,m,s)` is not order-preserving on `ℤ ×ₗ ℤ ×ₗ ℤ`, so the Hahn inverse (which uses `SummableFamily.powers` keyed to the orderTop) does not commute with sigma — the statement asserts `-1 = 0` at one exponent. The entire infrastructure was invalidated.
+**How to apply:** Before asserting commutativity of a coefficient map with ANY order-dependent Hahn construction, compute the map's effect on a concrete exponent pair to check order-preservation. If the map is a linear shear (like `e → e + c·m`) and the order is lex-first-component, check whether the shear can reverse the ordering of two specific exponents. If yes, inverse/order/leadingCoeff do NOT commute — find a proof route that avoids that commutativity.
