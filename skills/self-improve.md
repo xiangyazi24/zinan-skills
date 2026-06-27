@@ -18,10 +18,15 @@ user-invocable: true
 
 ## 温习模式（refresh-only）
 
-`/self-improve refresh <skill>` — 只执行 Step 1，跳过 Step 2+3。
+`/self-improve refresh <skill>` — 读 digest（不是 full），跳过 Step 2+3。
 
-**用途**：长 session 里 LLM 会因为 context 压缩逐渐忘记 skill 的具体约束。
-定期 refresh 把 skill 内容重新注入 context，强制刷新。
+**读的是 digest 文件**：`~/repos/zinan-skills/skills/<skill>.digest.md`
+- Digest 由 `gen-skill-digest.py` 从 full skill 文件自动生成（~10% 的行数）
+- 包含：所有 section 标题 + 每段首句 + bold 关键约束 + Learned Tactics 标题列表
+- Full skill 改了 → 重新跑 `python3 scripts/gen-skill-digest.py <skill>` 更新 digest
+- **Digest 是派生物，永远不手动编辑**
+
+**省 token**：lean full 906 行，digest 只有 ~80 行。refresh 3 小时一次不会浪费太多 token。
 
 **特别适用于 automode**：automode 跑 3-4 小时后，agent 会忘记 anti-pattern
 列表、统筹纪律、不停等选择题等约束。定期 refresh 是防遗忘的机械保障。
@@ -32,11 +37,10 @@ refresh 完成后只发一行 DM："[refresh] automode (research窗口) ✓"
 
 ### Step 1: 温习（Refresh）
 
-完整重新加载目标 skill 文档：
+加载目标 skill 文档：
 
-```
-读 ~/repos/zinan-skills/skills/<skill-name>.md（完整读，不跳）
-```
+- **Full 模式**：读 `~/repos/zinan-skills/skills/<skill>.md`（完整读，不跳）
+- **Refresh 模式**：读 `~/repos/zinan-skills/skills/<skill>.digest.md`（自动生成的摘要，省 token）
 
 读完后内部检查：**核心约束是什么？这几个小时有没有偏离？** 有明显偏离就纠正并在 Telegram 简短报告。
 

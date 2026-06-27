@@ -1,0 +1,81 @@
+# lean skill — DIGEST (auto-generated, do not edit)
+# Full version: ~/repos/zinan-skills/skills/lean.md
+
+
+## Learned Tactics (Self-Improvement)
+_(titles only; read full file for details)_
+### [2026-06-22] Your OWN "wiring vs hard theorem" verdict is a claim — TEST it, never assert it
+### [2026-06-22] CAS-verify algebraic identities before encoding in Lean
+### [2026-06-22] Prove the multiplied form first, cancel the factor separately
+### [2026-06-22] Borrow the repo's OWN probability/analytic library before proving a base brick from scratch
+### [2026-06-22] De-axiomatizing: audit the hypotheses the axiom let you SKIP, first
+### [2026-06-22] `subst h` can eliminate the WRONG variable — use `rw [h]` when you need both names
+### [2026-06-22] Overlapping rewrite lemmas misfire — state the goal already-canonical
+### [2026-06-22] Clear integer-division-by-a-constant before `ring`
+### [2026-06-22] Build a faithful model to DISCOVER the proof mechanism, not just verify truth
+### [2026-06-23] Trace the proof DAG for hidden circularity in "proven-modulo-X" reduction chains
+### [2026-06-23] Map ALL existing whole-goal reductions before building a NEW route
+### [2026-06-23] A cancellation/uniqueness engine on a SCALED difference needs the scale invariant under the engine's transport
+### [2026-06-23] Machine-extracted `linear_combination` cofactors must be INTEGER over a general ring
+### [2026-06-23] Validate a large `linear_combination` MECHANISM before the final cofactors land
+### [2026-06-23] Unconditional `∀`-hypothesis with only an `_of_wf` discharge: try the subclass-unconditional route before declaring vacuity OR restructuring
+### [2026-06-23] A carried hypothesis can BE the conclusion — signature-diff a "conditional result" against its OUTPUT type's fields
+### [2026-06-23] Re-dispatch a rejected proof task with the EXACT faked anti-pattern named and forbidden
+### [2026-06-23] Anti-诈尸: before calling an obligation "open" — or re-proving it — grep the repo for an existing discharger
+### [2026-06-23] Repeated correction of your OWN brief's premise on one sub-problem ⇒ escalate to an independent reasoner
+### [2026-06-23] An UNSATISFIABLE carried continuity/regularity hyp ⇒ the MODEL is over-engineered — simplify the object, don't satisfy the hyp
+### [2026-06-23] Sorry-stub an expensive dependency to fast-iterate the code that USES it
+### [2026-06-23] `simp only [bridge_lemma]` BEFORE full simp, when norm_cast would push the cast and kill the match
+### [2026-06-23] `linear_combination` "ring failed" — check the hypothesis ORIENTATION before the algebra
+### [2026-06-23] A uniform ∀-index field can be UNSATISFIABLE on a parallel assembly that weakens the per-index postcondition — gate it to the sub-band that needs it
+### [2026-06-23] Check the BASE invariant isn't STRONGER than the headline needs — pointwise/uniform-sup objects are often self-inflicted
+### [2026-06-23] Re-home a needed def/lemma OUT of an un-banked or discredited module — don't import the bad file for it
+### [2026-06-23] nlinarith times out on a high-degree goal — `ring`-expand the power FIRST, then it's hint-linear
+### [2026-06-23] A lemma that only PROPAGATES a bound should be parametric in the bound — generalize once, don't edit every layer
+### [2026-06-23] Push the slack to the stage that's actually hard — pick the intermediate constant that makes the resisting step TRIVIAL
+### [2026-06-23] Lean module-system migration: public / @[expose] / no-private-in-public
+### [2026-06-23] Escape an import-layer inversion by RELOCATING the goal above its proof materials
+### [2026-06-23] Harvesting LLM-generated Lean: classify clean-vs-sorried per decl, land only sorry-free; expect tactic-SCOPE bugs
+### [2026-06-24] Bridge an instance-coherence diamond with convert + congr + Subsingleton.elim — don't change file-wide instances
+### [2026-06-23] An off-by-a-CONSTANT in a "should-close" reindex means you're on a PRE-TRANSFORMED object
+### [2026-06-24] "Reaching state X triggers setup Y" — verify the TRANSITION PATH invokes Y, not just that X's init does Y
+### [2026-06-24] A `whnf`/`isDefEq` heartbeat timeout on a heavy definition is NOT a maxHeartbeats problem — block the unfolding
+### [2026-06-24] A carried "X satisfies identity E" hypothesis is VACUOUS if E's operator silently drops a term the real X has
+### [2026-06-24] Build on a disk-full host in tmpfs + pull dependencies from the package cache, not a cold recompile
+### [2026-06-24] Identities over a square-zero / dual-number extension: convert the `MulOpposite.op _ • _` from `snd_mul` before `ring`
+### [2026-06-24] Wire the downstream chain FROM the open frontier sorry, then axiom-check it propagates
+### [2026-06-24] A continuous-time tracking/tube invariant is true only on the window where the flow CONTRACTS — and if the target is rewritten each cycle, index the NEXT target; sample-window and target co-move
+### [2026-06-24] Large starting error in a relaxation/Grönwall tracking bound: use the FULL Duhamel form (mass contracts the start), not the simplified "hold" corollary (which demands start ≤ radius)
+### [2026-06-24] Lower-bound an integral via an interior sub-interval + nonneg extension — when the integrand's favorable pointwise bound degrades near the endpoints
+### [2026-06-24] Reconstruct the univariate slice EXPLICITLY from coefficients, don't fight the multivariate eval/map API
+### [2026-06-24] `#print axioms` clean is NECESSARY, not SUFFICIENT, for "unconditional" — it is SILENT on carried hypotheses
+### [2026-06-24] A "hard floor / needs new machinery" obligation: REDUCE-and-bank iteratively, don't attempt to close it
+### [2026-06-24] A side-condition that's FALSE at the stated generality must be THREADED from the call site — and re-routing to a "proven general" lemma won't drop it
+### [2026-06-24] Before a multi-brick CAMPAIGN on a "hard remaining piece", grep the conclusion's head symbol repo-wide — the bottleneck is often already proved (trivially)
+### [2026-06-24] Before building wiring around a "newly isolated" sorry, check if it's an EXISTING sorry restated
+### [2026-06-24] A record-constructor shortcut that ties two distinct parameters creates an impossible constraint when either can vanish independently
+### [2026-06-24] A discharge lemma in a DEAD file proves nothing for the headline — trace the import chain FROM the headline before claiming "discharged"
+### [2026-06-24] A predicate excluding only the EXTREME CORNER of a bad set silently admits the bad INTERIOR — witness the admitted region before trusting a carried surface
+### [2026-06-24] A prefix-sum budget (monotone increasing by the step) CANNOT also converge to zero — the unweighted error blows up after the depth exhausts
+### [2026-06-24] Search for the SOURCE PAPER's proof method as a repo MODULE before grinding any route
+### [2026-06-24] A packaged algebraic structure's type-class gate ≠ its raw coordinate formulas' gate — check the FORMULA's generality
+### [2026-06-25] When an error-accounting framework counts DESIGNED/CORRECT behavior as an error event, the bound is mathematically false — fix the error taxonomy, not the proof
+### [2026-06-25] A piecewise-defined object + a global-regularity consumer = UNSATISFIABLE hypothesis — build windowed consumer variants
+### [2026-06-25] An all-cycle interface feeding an eventual conclusion: add a PARALLEL shifted chain with warm-up, don't modify the original
+### [2026-06-25] A described-but-unimplemented plan may have been TRIED and ABANDONED — check the history before declaring it "ready"
+### [2026-06-25] `ring` cannot see through `Polynomial.C` — lift scalar relations via `congrArg C` then distribute with `map_*` simp lemmas
+### [2026-06-25] Trace what the downstream consumer ACTUALLY accesses in the upstream's output before building a heavyweight upstream — most fields may be unused, enabling a far simpler alternative
+### [2026-06-25] Never iterate full builds to debug a tactic in a heavy downstream file — sorry-stub the file, test the tactic in a MINIMAL import, THEN full-build once
+### [2026-06-25] After a route wins, DELETE the abandoned-route files and orphan experiments — a proof repo is not an archive of every attempt
+### [2026-06-25] A wrapper that hardcodes a parameter the engine leaves free creates an artificial universal-quantifier requirement — relax the hardcode to eliminate the hypothesis
+### [2026-06-25] `ring` cannot close identities where the atoms are algebraically dependent — diagnose dependence BEFORE building a clearing campaign
+### [2026-06-25] Universal-ring transport: prove a result over a domain, then map to the general ring
+### [2026-06-25] Grep your OWN repo for working Mathlib call patterns before iterating on type mismatches
+### [2026-06-25] A formal-series parameter encoding a MONOMIAL exponent cannot express a non-monomial scalar specialization — define a new object
+### [2026-06-25] When stuck on a deep identity, search the LITERATURE for alternative proofs — not just the source paper's own method
+### [2026-06-25] A `∀ x` field in a packaging structure may be UNSATISFIABLE — inline for the specific `x`
+### [2026-06-25] Bypass a hard type-class field by taking its consequences as explicit hypotheses
+### [2026-06-25] Grep ALL consumers before weakening a structure type — not just the direct file
+### [2026-06-25] Build-gate a sub-agent's uncommitted work BEFORE committing — stash/pop + commit is NOT a verified delivery
+### [2026-06-25] Induction base case fails at an offset sample point — check for a zero-offset formulation
+### [2026-06-25] After 2+ failed API name guesses, delegate to a fresh-context agent — don't iterate blind
