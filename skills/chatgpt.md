@@ -110,21 +110,28 @@ not the tmux pane.
 Use ONE script — **`ask-gpt.py`**. It blocks and prints ChatGPT's answer:
 
 ```bash
-# short question:
-python3 ~/.openclaw/workspace/scripts/ask-gpt.py <channel> "your question"
+# 推荐：auto 模式 — 自动找本窗口的空闲 channel，不用你指定
+python3 ~/.openclaw/workspace/scripts/ask-gpt.py auto "your question"
 
-# long / multi-line question (pipe via stdin — no quoting headaches):
-python3 ~/.openclaw/workspace/scripts/ask-gpt.py <channel> <<'EOQ'
+# 指定 channel（只在你明确需要某个 channel 时用）:
+python3 ~/.openclaw/workspace/scripts/ask-gpt.py dm1 "your question"
+
+# 长问题用 stdin:
+python3 ~/.openclaw/workspace/scripts/ask-gpt.py auto <<'EOQ'
 your long, multi-line question…
 EOQ
 ```
 
-- `<channel>` names an open ChatGPT tab; each channel/tab has a **GitHub repo
-  connected**, so ChatGPT can read that repo's code when answering.
+**默认用 `auto`。** 脚本自动检测你的 tmux 窗口 → 查 bridge API 找到
+对应 channel group → 选空闲的 channel 发出去。你不用关心 channel 叫什么、
+哪个空闲——这些是机械化的，脚本替你管。
 
-### Channel 命名规则与窗口隔离（严格执行）
+- `<channel>` 也可以显式指定（用于需要特定 channel 的场景）
+- 每个 channel/tab 有一个 **GitHub repo connected**，ChatGPT 可以读那个 repo
 
-**Channel 名以你所在的 tmux 窗口名为前缀。不要用串。**
+### Channel 命名规则与窗口隔离（auto 模式自动保证）
+
+**auto 模式自动遵守窗口隔离——只会选本窗口 group 里的 channel。**
 
 每次调用 `ask-gpt.py` 前，必须确认两件事：
 
