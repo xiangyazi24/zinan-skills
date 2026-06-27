@@ -349,6 +349,17 @@ session**——把关键状态写入 handoff，干净重启。这不是退堂鼓
 内务操作。判断标准：如果你发现自己在用错误的工具做事（比如用 Agent tool
 派 Claude 分身却叫它"codex"），那就是概念漂移，该 `/new` 了。
 
+**主动判断 `/new` 时机——不要等用户提醒（2026-06-27 爸爸点名）。**
+以下任何一个信号出现，自己写 handoff 然后 `/new`，不用请示：
+1. **Proof strategy 刚被推翻重来**——context 里满是废弃路线的细节，
+   继续在这里做新路线会被旧路线的 API 名/变量名/思路 pollute。
+2. **连续多轮 self-improve 刚跑完**——self-improve 消耗大量 context
+   读 skill 文件，之后继续主线工作效率明显下降。
+3. **Handoff 已经写好**——如果你写了 handoff，说明你已经认定当前
+   session 的核心价值已经提取完毕，继续在这里做只是在消耗 context。
+4. **工具使用连续出错两次**——见 "context drift = concept drift" 条目。
+这些都不是退堂鼓——是内务。判断标准永远是"新 session 能做得更好吗？"
+
 ## Do NOT
 
 - Do not ask direction questions inside a run.
