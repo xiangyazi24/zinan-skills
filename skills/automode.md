@@ -343,6 +343,12 @@ Agent:
 **"context 满了要开新 session"是吓唬用户的行为，等同于退堂鼓。**
 context 管理是你的基础能力，不是终止工作的借口。
 
+**但如果 context 确实太重导致概念漂移（忘记工具怎么用、把 Codex 当成
+自己的 subagent、CLI 参数全忘等），正确做法是调用 `/new` skill 起新
+session**——把关键状态写入 handoff，干净重启。这不是退堂鼓，是正当的
+内务操作。判断标准：如果你发现自己在用错误的工具做事（比如用 Agent tool
+派 Claude 分身却叫它"codex"），那就是概念漂移，该 `/new` 了。
+
 ## Do NOT
 
 - Do not ask direction questions inside a run.
@@ -613,3 +619,13 @@ When a run has multiple parallel avenues with external blockers (collaborator wo
 The mirror-image of premature victory (#14) is premature DEFEAT: declaring an obstruction "genuine / irreducible / the paper's core content" when one more analytical step reveals it is parameter-dependent, quantifier-dependent, or bypassable by a different interface. Three checks before declaring a wall genuine: (1) Is the obstruction at ALL parameter values, or only at the currently-chosen ones? A simple numerical computation (10 lines of Python) can resolve this. (2) Does the downstream CONSUMER actually require the uniform/strong form, or does a weaker per-input existential suffice? Read the type signature. (3) Is there a coordinate/field where the coupling vanishes, bypassing the obstruction entirely? Check the multiplier/Jacobian structure. Only after all three come back negative is the wall genuine. Each check takes minutes; premature frontier-declaration wastes hours.
 **Why:** In one session, declared "genuine frontier" three times — each overturned within an hour: (1) a "structural" decay-rate obstruction was parameter-dependent (different parameter value made the rate condition close); (2) a "∀w uniform" requirement turned out to be ∃T existential (the consumer's type signature allowed per-input); (3) a "small rho" requirement was bypassable because the readout coordinate had zero coupling (constant branch action, independent of the problematic coordinates).
 **How to apply:** When about to write "this is the genuine frontier / irreducible gap / paper's core content" in a commit or TG message: STOP. Run the three checks (parameter sweep, quantifier read, coupling analysis). If any dissolves the wall, it is not genuine. Pairs with #14 (premature optimism) — together they enforce: report ONLY verified-stable verdicts, whether positive or negative.
+
+### [2026-06-27] Codex is a SEPARATE PROGRAM, not a Claude subagent — dispatch it correctly or you waste hours
+When the user says "派 codex" / "codex 可以用了" / "上 codex", they mean the OpenAI Codex CLI (`/opt/homebrew/bin/codex`, codex-cli), a completely different AI that runs in its own tmux window. It is NOT a Claude Agent subagent. Spawning a Claude `Agent(model=opus)` and calling it "codex" is a category error that wastes hours: the Claude subagent has the same blind spots as you, while the real Codex (GPT-5.5) has independent reasoning that can break through where you're stuck.
+**Why:** In a long automode session, "codex" drifted from "the specific OpenAI tool" to "any subagent I dispatch." Three Claude subagents were launched as "codex" over ~2 hours, none produced results (same model = same blind spots). The real Codex was available the entire time. The root cause was concept drift from long context — the agent forgot what Codex actually IS.
+**How to apply:** When dispatching Codex: (1) `tmux new-window` for it, (2) launch with `codex -m gpt-5.5 -a never "prompt"` via `tmux-send-prompt.sh`, (3) monitor via `tmux capture-pane`. If you catch yourself using the `Agent` tool and calling it "codex" — that's concept drift, and you should `/new` to restart with a clean context.
+
+### [2026-06-27] Context drift = concept drift — if you're using the wrong tool, `/new` don't `/compact`
+In a very long session, `/compact` preserves the conversation summary but does NOT fix concept drift — where familiar terms ("codex", "dispatch", "channel") have silently changed meaning in your working memory. `/compact` keeps the drifted meanings. The fix is `/new`: write a handoff with the CONCRETE state (file, line, sorry, proof strategy, what's been tried), then start fresh. A new session re-reads CLAUDE.md + skills from scratch, restoring correct tool semantics. The signal that you need `/new` rather than `/compact`: you're confidently using a tool INCORRECTLY (wrong CLI flags, wrong program, wrong dispatch mechanism) without noticing.
+**Why:** After ~4 hours of automode, "codex" drifted to mean "Claude subagent", ChatGPT channel dispatch used wrong argument format (3 failed attempts before correct one), and CLI flags were guessed wrong (`--approval-mode` instead of `-a`). All this information was IN the loaded memories but had decayed. `/compact` would not have fixed it — only a fresh session reload would.
+**How to apply:** If you notice TWO tool-usage errors in a row (wrong flags, wrong program, wrong dispatch path), call `/new` immediately. Don't try to patch — the drift is systemic, not local.
