@@ -360,6 +360,12 @@ session**——把关键状态写入 handoff，干净重启。这不是退堂鼓
 4. **工具使用连续出错两次**——见 "context drift = concept drift" 条目。
 这些都不是退堂鼓——是内务。判断标准永远是"新 session 能做得更好吗？"
 
+**写完 handoff 必须立即执行 `/new`——不要停在那里。**
+这是 automode 下最常见的断链：LLM 写好了 handoff，然后不动了，等用户来
+按"继续"。handoff 的意义就是为了 renew，写完不执行等于白写。流程是一气呵成的：
+写 handoff（记得标 `automode: yes`）→ 执行 session-renew.sh → 新 session
+自动进入 automode + 读 handoff + 继续推进。中间不停顿、不请示。
+
 ## Do NOT
 
 - Do not ask direction questions inside a run.
@@ -655,3 +661,8 @@ When a cross-session handoff DOCTRINE contains mathematical/technical claims tha
 Repeatedly checking a dispatched process's output (tail log, wc -l, checking file size every 30 seconds) is IDLE WORK wearing a "monitoring" costume. The harness fires a task-notification when the process completes — that IS the harvest trigger; no intermediate poll adds information. Each poll-and-check cycle is time you are NOT spending on independent work. The anti-pattern is insidious because it FEELS productive ("I'm staying on top of the subagent's progress") when it produces zero new artifacts.
 **Why:** Spent 15+ minutes doing nothing but `tail -5 log`, `wc -l log`, `stat -f '%Sm' log` in a loop while a codex task ran, producing zero lines of independent work. The user called it out twice. The notification system existed and would have fired the moment the task completed — every poll was waste.
 **How to apply:** After dispatching any `run_in_background` task (codex, ChatGPT, build), immediately pivot to the next independent piece of work. The ONLY poll that adds value is a SINGLE diagnostic check when you suspect the process died (no notification after unreasonably long). Periodic "is it done yet?" polling ≥2 times without acting on intermediate information is the fingerprint. Distinct from "clean checkpoint = disguised idle" (that's about declaring yield; this is about active polling while nominally working) and "dispatch is a race" (that's about not blocking; this says polling IS blocking in disguise).
+
+### [2026-06-27] An inherited "X works, only Y is the blocker" is untested if X never built independently of Y — fixing Y can reveal X was broken all along
+When a handoff or prior-session state says "component X is fine, the build fails only because of Y," that assessment is reliable ONLY if X was independently built after Y's failure was introduced. If both X and Y live in the same compilation unit and Y's failure prevents the unit from producing any output, X's status is UNTESTED — the build system never checked it. Fixing Y may surface errors in X that were introduced simultaneously but never reported. Budget for an iterative discover-and-fix cycle after clearing the first blocker, and do not assume the handoff's "X is fine" claim.
+**Why:** Inherited a file where "d1 has a heartbeat timeout, d0 is fine." After splitting d1 to fix the timeout, d0's helper proofs surfaced ~10 type mismatches and API breaks that had been introduced in the same commit batch as the d1 changes but were never reported because the d1 timeout prevented the file from compiling past that point. Five build-fix iterations were spent before discovering d0 was broken too — each iteration assumed the NEXT fix would make it green.
+**How to apply:** After fixing a build blocker that prevented a file from compiling at all, do NOT assume the rest of the file is green. Explicitly check: "was the rest of this file independently verified AFTER the changes that introduced the blocker?" If not, treat every declaration in the file as potentially broken and budget for iterative fixing. Extends "verify inherited DOCTRINE's mathematical claims" to BUILD-STATE claims.
