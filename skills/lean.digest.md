@@ -94,3 +94,23 @@ _(titles only; read full file for details)_
 ### [2026-06-27] When kernel can't evaluate a large numerical bound, overapproximate with algebraic powers to stay in small-number arithmetic
 ### [2026-06-27] Use `IsCoprime.pow_left_iff` instead of rewriting `x^n → x*...*x` + `of_mul_left`
 ### [2026-06-27] An axiom/sorry stub must include TYPECLASS INSTANCES the proof consumer needs — not just the Prop
+### [2026-06-27] A green incremental build with cached olean can mask pre-existing errors — delete the cache after upstream changes
+### [2026-06-27] Split a heartbeat-heavy theorem into private helpers for independent budget isolation
+### [2026-06-27] Expand the bridge-error term ALGEBRAICALLY before building telescope infrastructure
+### [2026-06-27] For small-modulus proofs (mod 4/8), substitute-and-ring beats ZMod cast
+### [2026-06-27] `ring` canonical form kills `rw` in calc chains — rewrite at hypotheses instead
+### [2026-06-27] Use `set` to abstract big number literals before calling `ring`/`simp` — prevents maxRecDepth explosion
+### [2026-06-27] When the kernel must verify a large exact computation, precompute the answer externally and verify equality — "tell, don't compute"
+### [2026-06-27] A globally-quantified pipeline interface can be blocked by an analytical boundary singularity — bypass with a cutoff route
+### [2026-06-27] Decompose a monolithic sorry into typed per-case stubs — make each independently attackable
+### [2026-06-27] A coordinate shear that reindexes one summable family may FAIL on another whose term-coordinates depend on a different index
+### [2026-06-27] Audit infrastructure sorry counts before estimating a sorry's difficulty — assembly of zero-sorry components is categorically easier than missing theory
+### [2026-06-28] `set x := expr/k` makes `k*x` opaque to `rw`/`exact` — use `conv` or avoid `set` for divided expressions
+### [2026-06-28] An existential bound `∃ C, f(N) ≤ C*g(N)/N` is VACUOUS for convergence if C grows with N — audit the witness
+### [2026-06-28] BddAbove on a noncompact domain via left-zero / compact-mid / explicit-tail
+### [2026-06-28] `ContinuousOn.congr` takes `Set.EqOn g f s` — the argument is REVERSED from `f = g`
+### [2026-06-28] A `classical`-defined function is opaque to simp even on concrete arguments — use proven reduction lemmas instead
+### [2026-06-28] `apply_ite` distributes any function through if-then-else — use two phases for deeply nested ifs to avoid maxRecDepth
+### [2026-06-28] Numerically verify LLM-proposed proof intermediates BEFORE building infrastructure on them
+### [2026-06-28] `sorry` inside `exact f ... (by sorry) ... argN` suppresses type-checking of ALL later arguments — treat sorry-passing proofs as UNVERIFIED
+### [2026-06-28] `let` bindings in a theorem's argument type conflict with `set` variables — use `show` to force the outer name
