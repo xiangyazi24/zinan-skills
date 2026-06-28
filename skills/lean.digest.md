@@ -79,3 +79,18 @@ _(titles only; read full file for details)_
 ### [2026-06-25] Build-gate a sub-agent's uncommitted work BEFORE committing — stash/pop + commit is NOT a verified delivery
 ### [2026-06-25] Induction base case fails at an offset sample point — check for a zero-offset formulation
 ### [2026-06-25] After 2+ failed API name guesses, delegate to a fresh-context agent — don't iterate blind
+### [2026-06-27] A structure field NEVER REFERENCED in the proof chain is a dead field — grep before satisfying
+### [2026-06-27] A zero-coupling coordinate decouples from the multi-coordinate tracking problem — exploit to break circularity
+### [2026-06-27] Assembling ContDiffAt from HasDerivAt layers: use `contDiffOn_succ_of_fderivWithin` + `ContDiffOn.smulRight` + the `toSpanSingleton` bridge
+### [2026-06-27] Counterexample-test your own auxiliary lemmas BEFORE grinding their Lean proof
+### [2026-06-27] Numerically pre-verify quantitative conditions before writing the Lean proof — a 10-line Python check can save hours
+### [2026-06-27] A "clean-signature wrapper" that instantiates a proved theorem's abstract parameters from concrete inputs is NEW PROOF WORK — scope it separately from refactoring
+### [2026-06-27] For gcd/lcm identities, use the UNIVERSAL PROPERTY (dvd_antisymm + dvd_gcd) — don't hunt named lemmas
+### [2026-06-27] Verify composition-level support/boundedness conditions NUMERICALLY before building infrastructure on them
+### [2026-06-27] Renaming a file requires FOUR synchronized layers — filename, namespace, qualified refs, and docs
+### [2026-06-27] `lake env lean` type-checks but does NOT write oleans — use `lake build` when downstream files need the artifact
+### [2026-06-27] Mathlib API search → ChatGPT (repo connector), never subagent blind grep
+### [2026-06-27] A coefficient-reindexing relation does NOT commute with order-dependent constructions — test it before building on it
+### [2026-06-27] When kernel can't evaluate a large numerical bound, overapproximate with algebraic powers to stay in small-number arithmetic
+### [2026-06-27] Use `IsCoprime.pow_left_iff` instead of rewriting `x^n → x*...*x` + `of_mul_left`
+### [2026-06-27] An axiom/sorry stub must include TYPECLASS INSTANCES the proof consumer needs — not just the Prop
