@@ -114,3 +114,8 @@ _(titles only; read full file for details)_
 ### [2026-06-28] Numerically verify LLM-proposed proof intermediates BEFORE building infrastructure on them
 ### [2026-06-28] `sorry` inside `exact f ... (by sorry) ... argN` suppresses type-checking of ALL later arguments — treat sorry-passing proofs as UNVERIFIED
 ### [2026-06-28] `let` bindings in a theorem's argument type conflict with `set` variables — use `show` to force the outer name
+### [2026-06-28] Bound a tsum via `abs_tsum ≤ tsum_abs ≤ tsum_majorant` — write the helper once
+### [2026-06-28] Zero-radius placeholders in a multi-field bundle skeleton must be SATISFIABLE per field — not just per type
+### [2026-06-28] Lift a blocking sorry to a constructor PARAMETER to unlock downstream sorry
+### [2026-06-28] A documented "numerically FALSE" blocking claim may itself be false — independently re-verify before trusting
+### [2026-06-28] A coefficient identity verified in total but not pointwise per index requires involution/telescope — not bijection
